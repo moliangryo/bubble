@@ -3,6 +3,19 @@
 <head>
 	<!-- Web App Manifest -->
 	<link rel="manifest" href="manifest.json">
+  <style>
+    /* 覆盖 iOS 顶部状态栏 */
+    .statusbar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: env(safe-area-inset-top); /* 顶部刘海/状态栏的安全距离 */
+      background: #ffffff; /* 这里改成你页面背景色或背景图 */
+      z-index: 9999;
+    }
+  </style>
+</head>
 
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,6 +32,8 @@
 
 /* 1. 重置 body，使其成为一个干净的画布 */
 body {
+	<div class="statusbar-overlay"></div>
+
     height: 100%;
     overflow: hidden;
     margin: 0;
