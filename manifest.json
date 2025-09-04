@@ -2,7 +2,7 @@
   "name": "EPhone",
   "short_name": "EPhone",
   "description": "一个模拟手机界面的聊天应用",
-  "start_url": "/",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f0f2f5",
   "theme_color": "#007bff",
