@@ -10060,6 +10060,19 @@ commentActions.forEach(action => {
                     });
                     
                     // ▼▼▼ 【核心修正】在这里统一管理所有UI元素的显隐 ▼▼▼
+if (viewId === 'home-screen') {
+    // 显示底部 Dock
+    document.getElementById('desktop-dock').style.display = 'flex'; // 确保底部 Dock 显示
+    mainHeader.style.display = 'flex';
+    mainBottomNav.style.display = 'flex';
+} else {
+    // 隐藏底部 Dock
+    document.getElementById('desktop-dock').style.display = 'none'; // 隐藏底部 Dock
+    mainHeader.style.display = 'none';
+    mainBottomNav.style.display = 'none';
+}
+// ▲▲▲ 修正结束 ▲▲▲
+
                     if (viewId === 'messages-view') {
                         mainHeader.style.display = 'flex';
                         mainBottomNav.style.display = 'flex';
@@ -10068,16 +10081,7 @@ commentActions.forEach(action => {
                         mainBottomNav.style.display = 'none';
                     }
                     if (viewId === 'home-screen') {
-    // 显示底部 Dock
-    desktopDock.style.display = 'flex';  // 或者根据你的需求设置为 'block'
-    mainHeader.style.display = 'flex';
-    mainBottomNav.style.display = 'flex';
-} else {
-    // 隐藏底部 Dock
-    desktopDock.style.display = 'none';
-    mainHeader.style.display = 'none';
-    mainBottomNav.style.display = 'none';
-}
+   
                     // ▲▲▲ 修正结束 ▲▲▲
         
             if (viewId !== 'memories-view') {
