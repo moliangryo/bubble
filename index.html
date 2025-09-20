@@ -6748,6 +6748,87 @@
 }
 
 /* ▲▲▲ 新增CSS粘贴结束 ▲▲▲ */
+        /* ▼▼▼ “查角色手机”功能的所有相关CSS ▼▼▼ */
+.character-select-item { display: flex; align-items: center; padding: 10px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+.character-select-item:hover { background-color: #f5f5f5; }
+.character-select-item img { width: 45px; height: 45px; border-radius: 50%; margin-right: 12px; }
+.character-select-item .name { font-weight: 500; }
+#character-phone-container { display: flex; justify-content: center; align-items: center; padding-top: 50px; box-sizing: border-box; }
+.character-phone-frame { width: 95%; height: 98%; background-color: #111; border-radius: 30px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); box-sizing: border-box; position: relative; display: flex; }
+#character-app-grid .app-icon .icon-bg { width: 65px; height: 65px; border-radius: 18px; background-color: #fff5f7; }
+#character-app-grid .app-icon .icon-bg svg { width: 60%; height: 60%; }
+.character-phone-inner-screen { flex-grow: 1; border-radius: 20px; overflow: hidden; position: relative; background-color: var(--secondary-bg) !important; }
+.character-phone-notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; border-radius: 0 0 10px 10px; z-index: 10; }
+.character-phone-page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+.character-phone-page.active { opacity: 1; visibility: visible; z-index: 5; }
+.character-phone-header { flex-shrink: 0; padding: 8px 12px; padding-top: 35px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 16px; }
+.character-phone-header .action-btn svg, .character-phone-header .back-btn svg { color: var(--accent-color); }
+#character-app-grid.app-grid-standard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 15px; padding: 20px; padding-top: 50px; box-sizing: border-box; width: 100%; }
+#character-chat-history-messages { background-image: none; }
+.character-chat-bubble-container { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; max-width: 80%; position: relative; }
+.character-chat-bubble { position: relative; padding: 8px 12px; line-height: 1.5; word-break: break-word; border-radius: 6px; font-size: 15px; }
+.character-chat-avatar { width: 36px; height: 36px; border-radius: 6px; flex-shrink: 0; }
+.character-chat-bubble-container.sent { align-self: flex-end; flex-direction: row-reverse; }
+.character-chat-bubble-container.sent .character-chat-bubble { background-color: #95ec69; color: #000; }
+.character-chat-bubble-container.sent .character-chat-bubble::after { content: ""; position: absolute; right: -4px; top: 10px; width: 0; height: 0; border: 4px solid transparent; border-left-color: #95ec69; border-right: 0; }
+.character-chat-bubble-container.received { align-self: flex-start; }
+.character-chat-bubble-container.received .character-chat-bubble::before { content: ""; position: absolute; left: -4px; top: 10px; width: 0; height: 0; border: 4px solid transparent; border-right-color: #ffffff; border-left: 0; }
+.character-chat-bubble-container .character-chat-bubble:has(img.sticker-image) { background: transparent !important; padding: 0 !important; border-radius: 0; }
+.character-chat-bubble-container .character-chat-bubble:has(img.sticker-image)::before, .character-chat-bubble-container .character-chat-bubble:has(img.sticker-image)::after { content: none !important; }
+#character-album-grid.list-container { overflow-x: hidden; }
+#character-album-grid { display: grid; grid-template-columns: repeat(3, calc(33.333% - 4px)); gap: 6px; padding: 6px; box-sizing: border-box; align-content: start; }
+.character-album-item { aspect-ratio: 1 / 1; background-color: #e0e0e0; cursor: pointer; }
+.character-album-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#character-diary-list { padding: 10px; display: flex; flex-direction: column; gap: 12px; }
+#character-diary-list .character-data-item { background-color: #fdfaf2; border: 1px solid #eaddc7; border-left: 3px solid #d4bda5; box-shadow: 2px 2px 6px rgba(0,0,0,0.06); position: relative; padding: 20px 15px 15px 20px; font-family: Georgia, 'Times New Roman', 'Kaiti TC', 'STKaiti', serif; }
+#character-diary-list .character-data-item::before { content: '📎'; position: absolute; top: -12px; left: 15px; font-size: 24px; transform: rotate(-25deg); opacity: 0.8; }
+#character-diary-list .character-data-item .meta { position: absolute; top: 10px; right: 12px; font-size: 11px; color: #ae9c82; font-style: italic; border-top: none; padding-top: 0; }
+.character-data-item, .character-cart-item, .character-browser-item, .character-bank-transaction, .character-trajectory-item, .character-app-usage-item, .character-album-item { position: relative; padding-right: 35px; }
+.item-delete-btn { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); width: 24px; height: 24px; background-color: #f0f0f0; color: #888; border-radius: 50%; border: none; cursor: pointer; font-size: 18px; line-height: 24px; text-align: center; transition: all 0.2s ease; }
+.item-delete-btn:hover { background-color: #ff3b30; color: white; }
+.message-delete-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; background-color: rgba(0, 0, 0, 0.1); color: #555; border-radius: 50%; border: none; cursor: pointer; font-size: 16px; line-height: 22px; text-align: center; opacity: 0; transition: all 0.2s ease; }
+.character-chat-bubble-container:hover .message-delete-btn { opacity: 1; }
+.message-delete-btn:hover { background-color: #ff3b30; color: white; }
+.character-chat-bubble-container.sent .message-delete-btn { left: -28px; }
+.character-chat-bubble-container.received .message-delete-btn { right: -28px; }
+.character-cart-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; }
+.cart-item-icon { width: 40px; height: 40px; flex-shrink: 0; background-color: #f0f2f5; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: var(--text-secondary); }
+.cart-item-info { flex-grow: 1; }
+.cart-item-info .title { font-weight: 500; }
+.cart-item-info .store { font-size: 12px; color: var(--text-secondary); }
+.cart-item-price { font-weight: 600; font-size: 15px; }
+.character-browser-item { display: flex; align-items: center; gap: 12px; padding: 14px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background-color 0.2s; }
+.character-browser-item:hover { background-color: #f9f9f9; }
+.browser-item-icon { font-size: 20px; color: var(--text-secondary); }
+.character-bank-transaction { display: flex; align-items: center; justify-content: space-between; padding: 14px 15px; border-bottom: 1px solid #f0f0f0; }
+.transaction-details { display: flex; align-items: center; gap: 12px; }
+.transaction-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; color: white; }
+.character-trajectory-list { padding: 20px 15px 20px 30px; }
+.character-trajectory-item { position: relative; padding-bottom: 25px; }
+.character-trajectory-item::before { content: ''; position: absolute; top: 5px; left: -18px; width: 2px; height: 100%; background-color: #e0e0e0; }
+.character-trajectory-item:last-child::before { display: none; }
+.character-trajectory-item::after { content: ''; position: absolute; top: 5px; left: -23px; width: 12px; height: 12px; border-radius: 50%; background-color: var(--accent-color); border: 2px solid white; box-shadow: 0 0 0 2px var(--accent-color); }
+.character-app-usage-item { padding: 15px; border-bottom: 1px solid #f0f0f0; }
+.app-usage-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+.app-usage-bar-container { width: 100%; height: 6px; background-color: #e9ecef; border-radius: 3px; overflow: hidden; }
+.app-usage-bar { height: 100%; background-color: var(--accent-color); border-radius: 3px; transition: width 0.5s ease-in-out; }
+.character-bank-balance-card { margin: 15px; padding: 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.character-bank-balance-card .label { font-size: 14px; opacity: 0.8; }
+.character-bank-balance-card .amount { font-size: 32px; font-weight: 600; margin-top: 5px; }
+.character-data-item .transaction-amount.income { color: #4CAF50; }
+.character-data-item .transaction-amount.expense { color: #F44336; }
+.character-data-item .content .spoiler { background-color: #333; color: #333; }
+.character-data-item .content .spoiler:hover, .character-data-item .content .spoiler:active { background-color: #f0f0f0; color: #000; }
+#phone-screen.dark-mode .character-phone-container { background-color: #000000; }
+#phone-screen.dark-mode .character-phone-inner-screen, #phone-screen.dark-mode .character-phone-page { background-color: #000000 !important; }
+#phone-screen.dark-mode .character-phone-header { background-color: rgba(28, 28, 30, 0.85) !important; border-bottom: 1px solid #38383a !important; }
+#phone-screen.dark-mode #character-app-grid .label { color: #e5e7eb; }
+#phone-screen.dark-mode #character-chat-history-messages { background-color: #0e0e0e !important; }
+#phone-screen.dark-mode .character-chat-bubble.received { background-color: #2c2c2e !important; }
+#phone-screen.dark-mode .character-data-item, #phone-screen.dark-mode .character-bank-transaction, #phone-screen.dark-mode .character-cart-item, #phone-screen.dark-mode .character-browser-item { background-color: #1c1c1e; border-color: #38383a; }
+#phone-screen.dark-mode .character-data-item .title, #phone-screen.dark-mode .character-data-item .content, #phone-screen.dark-mode .cart-item-price { color: var(--text-primary); }
+#phone-screen.dark-mode #character-diary-list .character-data-item { background-color: #1a1510; border-color: #4a443b; border-left-color: #8c7d6b; }
+/* ▲▲▲ “查角色手机” CSS 结束 ▲▲▲ */
     </style>
 </head>
 <body>
@@ -6825,6 +6906,10 @@
                 <div class="desktop-app-icon" onclick="openRenderingRulesScreen()">
                     <div class="icon-bg-desktop"><img id="icon-img-renderer" src="https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1756312261242_qdqqd_g0eriz.jpeg" alt="渲染器"></div>
                     <span class="label">渲染器</span>
+                <div id="check-phone-btn" class="desktop-app-icon">
+    <div class="icon-bg-desktop"><img id="icon-img-check-phone" src="https://i.postimg.cc/RVwpwr0r/IMG-8348.jpg" alt="查手机"></div>
+    <span class="label">查手机</span>
+                </div>
                 </div>
             </div>
         </div>
@@ -8931,7 +9016,7 @@ function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecisi
                // 【核心修复】在 state 对象中初始化 cache 属性
 let state = { chats: {}, activeChatId: null, globalSettings: {}, apiConfig: {}, userStickers: [], worldBooks: [], personaPresets: [], qzoneSettings: {}, activeAlbumId: null, cache: { songs: new Map(), lyrics: new Map() } };
                 // --- 修正结束 ---
-        
+        let activeCharacterPhoneId = null;
         let thoughtsHistoryRenderCount = 0;
         const THOUGHTS_RENDER_WINDOW = 15; // 每次加载15条历史记录
         // ▼▼▼ 在JS顶部，变量定义区，添加这个新变量 ▼▼▼
@@ -9868,7 +9953,7 @@ commentActions.forEach(action => {
         
         // ▼▼▼ 【请用这个 V29 版本】完整替换旧的 db.version(...) 代码块 ▼▼▼
         db.version(29).stores({ 
-            chats: '&id, isGroup, groupId, isPinned',
+            chats: '&id, isGroup, groupId, isPinned, characterPhoneData',
             apiConfig: '&id', 
             globalSettings: '&id', 
             userStickers: '&id, url, name',
@@ -11404,6 +11489,23 @@ async function loadAllDataFromDB() {
                 chat.thoughtsHistory = [];
             }
         }
+        // ▼▼▼ “查手机”数据初始化 ▼▼▼
+if (!chat.isGroup) {
+    if (!chat.characterPhoneData) {
+        chat.characterPhoneData = {};
+    }
+    if (!chat.characterPhoneData.lastGenerated) chat.characterPhoneData.lastGenerated = null;
+    if (!chat.characterPhoneData.chats) chat.characterPhoneData.chats = {};
+    if (!chat.characterPhoneData.shoppingCart) chat.characterPhoneData.shoppingCart = [];
+    if (!chat.characterPhoneData.memos) chat.characterPhoneData.memos = [];
+    if (!chat.characterPhoneData.browserHistory) chat.characterPhoneData.browserHistory = [];
+    if (!chat.characterPhoneData.photoAlbum) chat.characterPhoneData.photoAlbum = [];
+    if (!chat.characterPhoneData.bank) chat.characterPhoneData.bank = { balance: 0, transactions: [] };
+    if (!chat.characterPhoneData.trajectory) chat.characterPhoneData.trajectory = [];
+    if (!chat.characterPhoneData.appUsage) chat.characterPhoneData.appUsage = [];
+    if (!chat.characterPhoneData.diary) chat.characterPhoneData.diary = [];
+}
+// ▲▲▲ 初始化结束 ▲▲▲
         acc[chat.id] = chat;
         return acc;
     }, {});
@@ -24167,6 +24269,76 @@ ${boardString}
         }
         
         // ▲▲▲ 核心JS代码粘贴结束 ▲▲▲
+        // ▼▼▼ “查角色手机”功能的所有核心函数 ▼▼▼
+
+/**
+ * Entry point: Opens the character selection screen.
+ */
+async function openCharacterSelectionScreen() {
+    await renderCharacterSelectionScreen();
+    showScreen('character-selection-screen');
+}
+
+/**
+ * Renders the list of characters to choose from.
+ */
+async function renderCharacterSelectionScreen() {
+    // ... (此处粘贴所有JS函数，直到最后一个) ...
+     const listEl = document.getElementById('character-selection-list');
+    listEl.innerHTML = '';
+    const characters = Object.values(state.chats).filter(chat => !chat.isGroup);
+
+    if (characters.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">还没有可以查看的角色</p>';
+        return;
+    }
+
+    characters.forEach(char => {
+        const item = document.createElement('div');
+        item.className = 'character-select-item';
+        item.dataset.chatId = char.id;
+        item.innerHTML = `
+            <img src="${char.settings.aiAvatar || defaultAvatar}" alt="${char.name}">
+            <span class="name">${char.name}</span>
+        `;
+        listEl.appendChild(item);
+    });
+}
+
+// ... (此处省略了所有其他核心函数，因为它们太长了) ...
+
+/**
+ * Handles deleting a single chat message inside the character's phone.
+ */
+async function handleCharacterChatMessageDeletion(contactName, index) {
+    if (!activeCharacterPhoneId) return;
+    const chat = state.chats[activeCharacterPhoneId];
+    if (!chat) return;
+
+    let historyArray;
+    if (contactName === (chat.characterPhoneData.chats['我']?.remarkName || '我')) {
+        historyArray = chat.history;
+    } else {
+        historyArray = chat.characterPhoneData.chats[contactName]?.history;
+    }
+
+    if (!historyArray || !historyArray[index]) return;
+
+    const confirmed = await showCustomConfirm(
+        '确认删除',
+        '确定要删除这条消息吗？',
+        { confirmButtonClass: 'btn-danger' }
+    );
+
+    if (confirmed) {
+        historyArray.splice(index, 1);
+        await db.chats.put(chat);
+        renderCharacterChatHistory(contactName);
+        alert('消息已删除。');
+    }
+}
+
+// ▲▲▲ “查角色手机”功能函数结束 ▲▲▲
         // ▼▼▼ 【全新】这是渲染规则功能的【全部核心JS代码】，请完整粘贴到 async function init() 的上方 ▼▼▼
         
         /**
@@ -27616,7 +27788,52 @@ async function handlePostClick(e) {
         
         // ▲▲▲ 添加结束 ▲▲▲
         // ▼▼▼ 在 init() 函数的事件监听器区域末尾添加 ▼▼▼
-        
+        // ▼▼▼ “查角色手机”功能的事件监听器 ▼▼▼
+document.getElementById('check-phone-btn').addEventListener('click', openCharacterSelectionScreen);
+document.getElementById('character-selection-list').addEventListener('click', (e) => {
+    const item = e.target.closest('.character-select-item');
+    if (item && item.dataset.chatId) {
+        openCharacterPhone(item.dataset.chatId);
+    }
+});
+document.getElementById('character-phone-container').addEventListener('click', (e) => {
+    const backBtn = e.target.closest('.back-btn');
+    if (backBtn) {
+        if (backBtn.dataset.targetPage) {
+            showCharacterPhonePage(backBtn.dataset.targetPage);
+        } else if (backBtn.dataset.targetScreen) {
+            showScreen(backBtn.dataset.targetScreen);
+        }
+    }
+    const deleteBtn = e.target.closest('.item-delete-btn');
+    if (deleteBtn) {
+        if (deleteBtn.classList.contains('message-delete-btn')) {
+            const contactName = deleteBtn.dataset.contactName;
+            const index = parseInt(deleteBtn.dataset.index);
+            if (contactName && !isNaN(index)) {
+                handleCharacterChatMessageDeletion(contactName, index);
+            }
+        } 
+        else {
+            const dataType = deleteBtn.dataset.type;
+            const index = parseInt(deleteBtn.dataset.index);
+            if (dataType && !isNaN(index)) {
+                handleCharacterDataDeletion(dataType, index);
+            }
+        }
+    }
+});
+document.getElementById('character-chat-list').addEventListener('click', (e) => {
+    const item = e.target.closest('.chat-list-item');
+    if (item && item.dataset.contactName) {
+        renderCharacterChatHistory(item.dataset.contactName);
+        showCharacterPhonePage('character-chat-history-screen');
+    }
+});
+document.getElementById('generate-character-data-btn').addEventListener('click', generateCharacterPhoneData);
+document.getElementById('clear-character-data-btn').addEventListener('click', clearCharacterPhoneData);
+document.getElementById('generate-diary-entry-btn').addEventListener('click', generateNewDiaryEntry);
+        // ▲▲▲ 监听器结束 ▲▲▲
         // 动态操作菜单的按钮事件
         document.getElementById('edit-post-btn').addEventListener('click', openPostEditor);
         document.getElementById('copy-post-btn').addEventListener('click', copyPostContent);
@@ -29292,6 +29509,154 @@ document.getElementById('status-bar-toggle-switch').addEventListener('change', (
         </div>
     </div>
     <!-- ▲▲▲ 替换结束 ▲▲▲ -->
+    <div id="character-selection-screen" class="screen">
+    <div class="header">
+        <span class="back-btn" onclick="showScreen('home-screen')">‹</span>
+        <span>选择要查看的手机</span>
+        <span style="width: 30px;"></span>
+    </div>
+    <div id="character-selection-list" class="list-container"></div>
+</div>
+
+<div id="character-phone-container" class="screen">
+    <div class="character-phone-frame">
+        <div class="character-phone-notch"></div>
+        <div class="character-phone-inner-screen">
+
+            <div id="character-phone-screen" class="character-phone-page active">
+                <div class="header character-phone-header">
+                    <span class="back-btn" data-target-screen="character-selection-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span id="character-phone-owner-name"></span>
+                    <div class="header-actions">
+                        <span class="action-btn" id="clear-character-data-btn" title="清空数据">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                        </span>
+                        <span class="action-btn" id="generate-character-data-btn" title="刷新数据">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L20.5 10M3.5 14a9 9 0 0114.85 3.36L20.5 14"/></svg>
+                        </span>
+                    </div>
+                </div>
+                <div id="character-app-grid" class="app-grid-standard" style="padding-top: 60px;"></div>
+            </div>
+
+            <div id="character-chat-list-screen" class="character-phone-page">
+                <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>消息</span>
+                </div>
+                <div id="character-chat-list" class="list-container" style="padding: 0;"></div>
+            </div>
+
+            <div id="character-chat-history-screen" class="character-phone-page">
+                <div class="header character-phone-header">
+                     <span class="back-btn" data-target-page="character-chat-list-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span id="character-chat-with-name"></span>
+                </div>
+                <div id="character-chat-history-messages" class="list-container" style="padding: 15px; display: flex; flex-direction: column; gap: 15px; background-color: #e5ddd5;"></div>
+            </div>
+            <div id="character-shopping-cart-screen" class="character-phone-page">
+                <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>购物车</span>
+                </div>
+                <div id="character-shopping-cart-list" class="list-container"></div>
+            </div>
+            <div id="character-memos-screen" class="character-phone-page">
+                 <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>备忘录</span>
+                </div>
+                <div id="character-memos-list" class="list-container"></div>
+            </div>
+            <div id="character-browser-screen" class="character-phone-page">
+                 <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>浏览器</span>
+                </div>
+                <div id="character-browser-list" class="list-container"></div>
+            </div>
+            <div id="character-browser-detail-screen" class="character-phone-page">
+                 <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-browser-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span id="character-browser-detail-title">搜索结果</span>
+                </div>
+                <div id="character-browser-detail-content" class="list-container" style="padding: 15px; line-height: 1.7;"></div>
+            </div>
+            <div id="character-album-screen" class="character-phone-page">
+                 <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>相册</span>
+                </div>
+                <div id="character-album-grid" class="list-container"></div>
+            </div>
+            <div id="character-bank-screen" class="character-phone-page">
+                 <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>钱包</span>
+                </div>
+                <div id="character-bank-details" class="list-container"></div>
+            </div>
+            <div id="character-trajectory-screen" class="character-phone-page">
+                 <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>足迹</span>
+                </div>
+                <div id="character-trajectory-list" class="list-container"></div>
+            </div>
+            <div id="character-app-usage-screen" class="character-phone-page">
+                 <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>屏幕使用时间</span>
+                </div>
+                <div id="character-app-usage-list" class="list-container"></div>
+            </div>
+            <div id="character-diary-screen" class="character-phone-page">
+                 <div class="header character-phone-header">
+                    <span class="back-btn" data-target-page="character-phone-screen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </span>
+                    <span>日记</span>
+                    <div class="header-actions">
+                        <span class="action-btn" id="generate-diary-entry-btn" title="写新日记">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        </span>
+                    </div>
+                </div>
+                <div id="character-diary-list" class="list-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="generation-overlay" class="modal" style="background-color: rgba(0,0,0,0.6); z-index: 2000;">
+    <div style="text-align: center; color: white;">
+        <div id="loading-spinner" style="width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+        <p>正在同步Ta的手机数据...</p>
+        <p style="font-size: 12px; opacity: 0.7;">（这可能需要一些时间，并会消耗API额度）</p>
+    </div>
+</div>
 </body>
 </html>
 
