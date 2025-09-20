@@ -17057,6 +17057,876 @@ ${longTermMemoryContext}
             applyScopedCss(customCss, '#settings-preview-area', 'preview-bubble-style');
         }
         // ▲▲▲ 替换结束 ▲▲▲
+        // ▼▼▼ 【全新】“查角色手机”功能的所有核心函数 ▼▼▼
+
+/**
+ * 入口：打开角色选择界面
+ */
+async function openCharacterSelectionScreen() {
+    await renderCharacterSelectionScreen();
+    showScreen('character-selection-screen');
+}
+
+/**
+ * 渲染角色选择列表
+ */
+async function renderCharacterSelectionScreen() {
+    const listEl = document.getElementById('character-selection-list');
+    listEl.innerHTML = '';
+    const characters = Object.values(state.chats).filter(chat => !chat.isGroup);
+
+    if (characters.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">还没有可以查看的角色</p>';
+        return;
+    }
+
+    characters.forEach(char => {
+        const item = document.createElement('div');
+        item.className = 'character-select-item';
+        item.dataset.chatId = char.id;
+        item.innerHTML = `
+            <img src="${char.settings.aiAvatar || defaultAvatar}" alt="${char.name}">
+            <span class="name">${char.name}</span>
+        `;
+        listEl.appendChild(item);
+    });
+}
+
+/**
+ * 【V2重构版】打开指定角色的手机界面
+ */
+function openCharacterPhone(chatId) {
+    activeCharacterPhoneId = chatId;
+    const chat = state.chats[chatId];
+    if (!chat) return;
+
+    document.getElementById('character-phone-owner-name').textContent = `${chat.name}的手机`;
+    renderCharacterAppGrid(); // 渲染APP图标
+
+    // 核心修改：我们现在显示的是“手机外壳”这个总容器
+    showScreen('character-phone-container'); 
+    // 同时，确保默认显示的是它的主屏幕
+    showCharacterPhonePage('character-phone-screen');
+}
+
+/**
+ * 【V4美化版】渲染角色手机主界面的APP图标
+ */
+function renderCharacterAppGrid() {
+    const gridEl = document.getElementById('character-app-grid');
+    gridEl.innerHTML = '';
+
+    const apps = [
+        { 
+            id: 'chat', name: '微信', screen: 'character-chat-list-screen',
+            svg: `<svg viewBox="0 0 24 24" fill="#4CAF50"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.94 1.28 5.58 3.34 7.42c-.22 1.4-.89 3.1-1.25 3.82c-.36.72.48 1.39 1.05.94c.82-.67 2.43-1.88 3.3-2.58C9.44 21.78 10.68 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm3.5 10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5zm-7 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg>`
+        },
+        { 
+            id: 'cart', name: '购物车', screen: 'character-shopping-cart-screen',
+            svg: `<svg viewBox="0 0 24 24" fill="#F44336"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2s-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2s2-.9 2-2s-.9-2-2-2zm-15-14h3.27l.94 2H20c.69 0 1.25.56 1.25 1.25c0 .09-.02.18-.04.27l-3.58 6.49c-.25.44-.73.74-1.26.74H8.52l-.94-2H4.27V4H2V2h3.27z"/></svg>`
+        },
+        { 
+            id: 'memos', name: '备忘录', screen: 'character-memos-screen',
+            svg: `<svg viewBox="0 0 24 24" fill="#FFC107"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`
+        },
+        {
+            id: 'browser', name: '浏览器', screen: 'character-browser-screen',
+            // 【核心修改】替换为新的指南针SVG
+            svg: `<svg viewBox="0 0 24 24" fill="#2196F3"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1.5-12.5l3 7.5 7.5-3-7.5-3z"/></svg>`
+        },
+        {
+            id: 'album', name: '相册', screen: 'character-album-screen',
+            svg: `<svg viewBox="0 0 24 24" fill="#8BC34A"><path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z"/></svg>`
+        },
+        {
+            id: 'bank', name: '钱包', screen: 'character-bank-screen',
+            // 【核心修改】替换为新的钱包SVG
+            svg: `<svg viewBox="0 0 24 24" fill="#E91E63"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`
+        },
+        {
+            id: 'trajectory', name: '足迹', screen: 'character-trajectory-screen',
+            svg: `<svg viewBox="0 0 24 24" fill="#795548"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5z"/></svg>`
+        },
+        {
+            id: 'app_usage', name: '使用记录', screen: 'character-app-usage-screen',
+            svg: `<svg viewBox="0 0 24 24" fill="#607D8B"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8s8 3.58 8 8s-3.58 8-8 8zm.5-13H11v6l5.25 3.15l.75-1.23l-4.5-2.67z"/></svg>`
+        },
+        {
+            id: 'diary', name: '日记', screen: 'character-diary-screen',
+            svg: `<svg viewBox="0 0 24 24" fill="#009688"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83l3.75 3.75 1.83-1.83z"/></svg>`
+        },
+    ];
+
+    apps.forEach(app => {
+        const iconEl = document.createElement('div');
+        iconEl.className = 'app-icon';
+        iconEl.innerHTML = `
+            <div class="icon-bg" style="display: flex; justify-content: center; align-items: center; padding: 12px;">
+                ${app.svg}
+            </div>
+            <span class="label">${app.name}</span>
+        `;
+        iconEl.addEventListener('click', () => {
+            switch(app.id) {
+                case 'chat': renderCharacterChatList(); break;
+                case 'cart': renderCharacterShoppingCart(); break;
+                case 'memos': renderCharacterMemos(); break;
+                case 'browser': renderCharacterBrowser(); break;
+                case 'album': renderCharacterPhotoAlbum(); break;
+                case 'bank': renderCharacterBank(); break;
+                case 'trajectory': renderCharacterTrajectory(); break;
+                case 'app_usage': renderCharacterAppUsage(); break;
+            }
+            showCharacterPhonePage(app.screen); 
+        });
+        gridEl.appendChild(iconEl);
+    });
+}
+
+/**
+ * 【AI核心】生成角色手机数据
+ */
+async function generateCharacterPhoneData() {
+    if (!activeCharacterPhoneId) return;
+    const chat = state.chats[activeCharacterPhoneId];
+    if (!chat) return;
+
+    document.getElementById('generation-overlay').classList.add('visible');
+
+    try {
+        const userNickname = state.qzoneSettings.nickname || '我'; // 获取用户昵称
+        const persona = chat.settings.aiPersona;
+        const recentHistory = chat.history.slice(-10).map(msg => {
+            const sender = msg.role === 'user' ? userNickname : chat.name;
+            return `${sender}: ${msg.content}`;
+        }).join('\n');
+        
+        let worldBookContext = '';
+        if (chat.settings.linkedWorldBookIds && chat.settings.linkedWorldBookIds.length > 0) {
+            worldBookContext = '--- 世界观设定 (必须严格遵守) ---\n' +
+                chat.settings.linkedWorldBookIds.map(id => {
+                    const book = state.worldBooks.find(b => b.id === id);
+                    return book ? `[${book.name}]: ${book.content}` : '';
+                }).join('\n\n');
+        }
+        const npcLibrary = chat.npcLibrary || [];
+        let npcContext = '';
+        if (npcLibrary.length > 0) {
+            npcContext = '# 你的专属NPC好友列表 (你必须在下方"chats"中为他们生成对话)\n' +
+                '这些人是你的好朋友，你和他们非常熟悉。请根据他们的人设，生成符合你们关系的、自然的聊天记录。\n' +
+                npcLibrary.map(npc => `- **${npc.name}**: ${npc.persona}`).join('\n');
+        } else {
+            npcContext = '# 你的专属NPC好友列表\n(你没有专属NPC，请虚构一些普通朋友)';
+        }
+
+        const prompt = `
+# 任务
+你现在是角色 "${chat.name}"。请根据你的人设、世界观、NPC好友列表以及和${userNickname}的最近聊天记录，模拟生成你手机中的各项数据。你需要一次性生成所有数据，并严格按照下面的JSON格式返回。
+
+# 你的信息
+- 你的名字: ${chat.name}
+- 你的人设: ${persona}
+${worldBookContext}
+
+# 和${userNickname}的最近聊天记录摘要
+${recentHistory}
+
+${npcContext}
+
+# JSON输出格式 (必须严格遵守，不要添加任何额外说明)
+{
+  "chats": [
+    {
+      "contactName": "【这里填写你给${userNickname}的备注名】"
+    },
+    {
+      "contactName": "【这里必须填写上面NPC列表中的一个名字，或一个虚构朋友名】",
+      "messages": [
+        {"sender": "【联系人名】", "content": "消息内容1..."},
+        {"sender": "${chat.name}", "content": "你的回复1..."},
+        {"sender": "【联系人名】", "content": "消息内容2..."},
+        {"sender": "【联系人名】", "content": "消息内容3..."},
+        {"sender": "${chat.name}", "content": "你的回复2..."}
+      ]
+    }
+  ],
+  "shoppingCart": [
+    {"name": "商品名", "price": 价格, "store": "店铺名"}
+  ],
+  "memos": [
+    {"title": "备忘录标题", "content": "备忘录详细内容..."}
+  ],
+  "browserHistory": [
+    {"query": "搜索或浏览的标题", "result": "【这里是AI生成的、关于这个搜索标题的模拟文章或网页内容】"}
+  ],
+  "photoAlbum": [
+    {"hiddenContent": "对照片画面的详细文字描述"}
+  ],
+  "bank": {
+    "balance": 银行卡余额(数字),
+    "transactions": [
+      {"type": "收入或支出", "amount": 金额, "description": "交易描述"}
+    ]
+  },
+  "trajectory": [
+    {"time": "时间段", "location": "地点", "activity": "干了什么事"}
+  ],
+  "appUsage": [
+    {"appName": "应用名", "duration": "使用时长"}
+  ]
+}
+
+# 【【【重要指令：关于聊天记录生成】】】
+- 如果“你的专属NPC好友列表”不为空，你【必须】为列表中的【每一个NPC】都生成一段与你（${chat.name}）的对话。
+- 如果列表为空，你可以像以前一样虚构2-3个普通朋友并生成对话。
+- 你必须为每个虚构联系人生成一段【至少包含5条消息】的对话。
+- 对话内容应该自然流畅，可以包含连续发言、表情包和表情符号等，以体现真实感。
+- 不要只生成一问一答的机械式对话。
+`;
+
+        const { proxyUrl, apiKey, model } = state.apiConfig;
+        let isGemini = proxyUrl === GEMINI_API_URL;
+        let geminiConfig = toGeminiRequestData(model, apiKey, prompt, [{role: 'user', content: prompt}], isGemini);
+
+        const response = isGemini 
+            ? await fetch(geminiConfig.url, geminiConfig.data) 
+            : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                body: JSON.stringify({
+                    model: model,
+                    messages: [{role: 'user', content: prompt}],
+                    temperature: 0.8,
+                    response_format: { type: "json_object" }
+                })
+            });
+
+        if (!response.ok) throw new Error('API请求失败');
+        
+        const data = await response.json();
+        const aiResponseContent = (isGemini ? data.candidates[0].content.parts[0].text : data.choices[0].message.content)
+            .replace(/^```json\s*|```$/g, '');
+
+        const newData = JSON.parse(aiResponseContent);
+
+        let phoneData = chat.characterPhoneData;
+        phoneData.lastGenerated = Date.now();
+        
+        if (newData.chats) {
+            newData.chats.forEach(newChat => {
+                if (!newChat.messages) {
+                    if (!phoneData.chats[userNickname]) {
+                        phoneData.chats[userNickname] = { avatar: '', history: [] };
+                    }
+                    phoneData.chats[userNickname].remarkName = newChat.contactName;
+                } 
+                else {
+                    const contactName = newChat.contactName;
+                    if (phoneData.chats[contactName]) {
+                        phoneData.chats[contactName].history.push(...newChat.messages);
+                    } else {
+                        phoneData.chats[contactName] = { 
+                            avatar: newChat.avatar, 
+                            history: newChat.messages 
+                        };
+                    }
+                }
+            });
+        }
+
+        if(!phoneData.shoppingCart) phoneData.shoppingCart = [];
+        phoneData.shoppingCart.push(...(newData.shoppingCart || []));
+        if(!phoneData.memos) phoneData.memos = [];
+        phoneData.memos.push(...(newData.memos || []));
+        if(!phoneData.browserHistory) phoneData.browserHistory = [];
+        phoneData.browserHistory.push(...(newData.browserHistory || []));
+        if(!phoneData.photoAlbum) phoneData.photoAlbum = [];
+        phoneData.photoAlbum.push(...(newData.photoAlbum || []));
+        if(!phoneData.trajectory) phoneData.trajectory = [];
+        phoneData.trajectory.push(...(newData.trajectory || []));
+        if(!phoneData.appUsage) phoneData.appUsage = [];
+        phoneData.appUsage.push(...(newData.appUsage || []));
+        if (!phoneData.diary) phoneData.diary = [];
+        phoneData.diary.push(...(newData.diary || []));
+
+        if (newData.bank) {
+            if(!phoneData.bank) phoneData.bank = { balance: 0, transactions: [] };
+            phoneData.bank.balance = newData.bank.balance || phoneData.bank.balance;
+            phoneData.bank.transactions.push(...(newData.bank.transactions || []));
+        }
+
+        await db.chats.put(chat);
+        alert('数据已刷新！');
+
+    } catch (error) {
+        console.error("生成角色手机数据失败:", error);
+        alert(`生成失败: ${error.message}`);
+    } finally {
+        document.getElementById('generation-overlay').classList.remove('visible');
+    }
+}
+
+
+/**
+ * 清空角色手机数据
+ */
+async function clearCharacterPhoneData() {
+    if (!activeCharacterPhoneId) return;
+    const chat = state.chats[activeCharacterPhoneId];
+    if (!chat) return;
+
+    const confirmed = await showCustomConfirm('确认清空', `确定要清空“${chat.name}”的所有手机数据吗？此操作不可恢复。`, { confirmButtonClass: 'btn-danger' });
+    if (confirmed) {
+        // 重置为初始状态
+        chat.characterPhoneData = {
+            lastGenerated: null, chats: {}, shoppingCart: [], memos: [],
+            browserHistory: [], photoAlbum: [], bank: { balance: 0, transactions: [] },
+            trajectory: [],         appUsage: [],
+        diary: [] // <--- 在这里新增
+        };
+        await db.chats.put(chat);
+        // 重新渲染APP网格，因为点击APP会读取新数据
+        renderCharacterAppGrid();
+        alert('数据已清空。');
+    }
+}
+
+// --- 以下是各个APP界面的渲染函数 ---
+
+/**
+ * 【V6最终修正版】渲染角色手机的聊天列表 (修复NPC头像颜色不一致问题)
+ */
+function renderCharacterChatList() {
+    const listEl = document.getElementById('character-chat-list');
+    const characterChatData = state.chats[activeCharacterPhoneId].characterPhoneData;
+    const realChatHistory = state.chats[activeCharacterPhoneId].history;
+    listEl.innerHTML = '';
+
+    // 【移除】不再需要 colorIndex，因为颜色不再依赖顺序
+    // let colorIndex = 0; 
+    const avatarColors = ['#FFC107', '#4CAF50', '#2196F3', '#F44336', '#9C27B0', '#00BCD4'];
+
+    // 1. 优先渲染和“我”的聊天 (逻辑不变)
+    const myChatData = characterChatData.chats['我'];
+    if (myChatData) {
+        const lastMsg = realChatHistory.filter(m => !m.isHidden).slice(-1)[0] || { content: '...' };
+        const myChatItem = document.createElement('div');
+        myChatItem.className = 'chat-list-item';
+        const remarkNameForMe = myChatData.remarkName || '我';
+        myChatItem.dataset.contactName = remarkNameForMe; 
+        
+        const myAvatar = state.chats[activeCharacterPhoneId].settings.myAvatar || defaultMyGroupAvatar;
+        
+        myChatItem.innerHTML = `
+            <img src="${myAvatar}" class="avatar" style="border-radius: 6px;">
+            <div class="info">
+                <span class="name">${remarkNameForMe}</span>
+                <div class="last-msg">${String(lastMsg.content).substring(0, 30)}</div>
+            </div>
+        `;
+        listEl.appendChild(myChatItem);
+    }
+
+    // 2. 接着渲染所有和NPC的聊天
+    for (const contactName in characterChatData.chats) {
+        if (contactName === '我') continue;
+
+        const contact = characterChatData.chats[contactName];
+        const lastNpcMsg = contact.history.slice(-1)[0] || { content: '...' };
+        const npcChatItem = document.createElement('div');
+        npcChatItem.className = 'chat-list-item';
+        npcChatItem.dataset.contactName = contactName;
+
+// ▼▼▼ 从这里开始替换 ▼▼▼
+        let npcAvatarHtml;
+        const characterChat = state.chats[activeCharacterPhoneId];
+        // 在角色的NPC库中，根据名字查找这个联系人
+        const npcFromLibrary = (characterChat.npcLibrary || []).find(npc => npc.name === contactName);
+
+        // 如果在NPC库中找到了这个NPC，并且他有头像URL
+        if (npcFromLibrary && npcFromLibrary.avatar) {
+            // 就使用他的真实头像
+            npcAvatarHtml = `<img src="${npcFromLibrary.avatar}" class="avatar" style="border-radius: 6px;">`;
+        } else {
+            // 否则 (比如这个NPC是AI临时虚构的，或者你没给他设置头像)，
+            // 我们才使用原来的文字头像作为备用方案
+            const npcNameInitial = contactName.slice(-1);
+            const colorIndex = contactName.length % avatarColors.length;
+            const bgColor = avatarColors[colorIndex];
+            
+            npcAvatarHtml = `
+                <div class="avatar" style="border-radius: 6px; background-color: ${bgColor}; color: white; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: 500;">
+                    ${npcNameInitial}
+                </div>
+            `;
+        }
+// ▲▲▲ 替换到这里结束 ▲▲▲
+
+
+        npcChatItem.innerHTML = `
+            ${npcAvatarHtml}
+            <div class="info">
+                <span class="name">${contactName}</span>
+                <div class="last-msg">${String(lastNpcMsg.content).substring(0, 30)}</div>
+            </div>
+        `;
+        listEl.appendChild(npcChatItem);
+    }
+
+    if (listEl.children.length === 0) {
+         listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">还没有聊天记录，请先刷新数据。</p>';
+    }
+}
+
+// ▼▼▼ 从这里开始替换 ▼▼▼
+/**
+ * 【V7最终美化版】渲染角色手机的具体聊天记录 (同步列表头像样式 + 显示真实NPC头像)
+ */
+function renderCharacterChatHistory(contactName) {
+    const messagesEl = document.getElementById('character-chat-history-messages');
+    messagesEl.innerHTML = '';
+    
+    const characterChat = state.chats[activeCharacterPhoneId];
+    if (!characterChat) return;
+
+    let finalContactName = contactName;
+    const myChatData = characterChat.characterPhoneData.chats['我'];
+    if ((contactName === '我' || (myChatData && contactName === myChatData.remarkName)) && myChatData) {
+        finalContactName = myChatData.remarkName || '我';
+    }
+    document.getElementById('character-chat-with-name').textContent = finalContactName;
+
+    const avatarColors = ['#FFC107', '#4CAF50', '#2196F3', '#F44336', '#9C27B0', '#00BCD4'];
+    let mainCharacterAvatarHtml;
+    let otherParticipantAvatarHtml;
+
+    const characterAvatarSrc = characterChat.settings.aiAvatar || defaultAvatar;
+    mainCharacterAvatarHtml = `<img src="${characterAvatarSrc}" class="character-chat-avatar">`;
+
+    if (finalContactName === (myChatData?.remarkName || '我')) {
+        const myAvatarSrc = characterChat.settings.myAvatar || defaultMyGroupAvatar;
+        otherParticipantAvatarHtml = `<img src="${myAvatarSrc}" class="character-chat-avatar">`;
+    } else {
+        const npcData = (characterChat.npcLibrary || []).find(npc => npc.name === contactName);
+        if (npcData && npcData.avatar) {
+            otherParticipantAvatarHtml = `<img src="${npcData.avatar}" class="character-chat-avatar">`;
+        } else {
+            const npcNameInitial = contactName.slice(-1);
+            const colorIndex = contactName.length % avatarColors.length;
+            const bgColor = avatarColors[colorIndex];
+            otherParticipantAvatarHtml = `
+                <div class="character-chat-avatar" style="background-color: ${bgColor}; color: white; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: 500;">
+                    ${npcNameInitial}
+                </div>
+            `;
+        }
+    }
+
+    let historyToShow = [];
+    if (finalContactName === (myChatData?.remarkName || '我')) {
+        historyToShow = characterChat.history.filter(m => !m.isHidden).slice(-20);
+    } else {
+        const npcChat = characterChat.characterPhoneData.chats[contactName];
+        if (npcChat) {
+            historyToShow = npcChat.history;
+        }
+    }
+    
+    const characterName = characterChat.name;
+    historyToShow.forEach((msg, index) => {
+        if (msg.isHidden) return;
+
+        const container = document.createElement('div');
+        const sender = msg.role === 'user' ? '我' : (msg.sender || characterName);
+        const isSentByCharacter = sender === characterName;
+        
+        container.className = `character-chat-bubble-container ${isSentByCharacter ? 'sent' : 'received'}`;
+        
+        const avatarHtml = isSentByCharacter ? mainCharacterAvatarHtml : otherParticipantAvatarHtml;
+        
+        let contentHtml = '';
+        if (typeof msg.content === 'string' && STICKER_REGEX.test(msg.content)) {
+            contentHtml = `<img src="${msg.content}" class="sticker-image" style="max-height: 100px;">`;
+        } else {
+            contentHtml = msg.content;
+        }
+        const bubbleHtml = `<div class="character-chat-bubble">${contentHtml}</div>`;
+        
+        // 【核心修改】在这里加入了删除按钮
+        container.innerHTML = `
+            ${avatarHtml}
+            ${bubbleHtml}
+            <button class="item-delete-btn message-delete-btn" data-contact-name="${finalContactName}" data-index="${index}">×</button>
+        `;
+        
+        messagesEl.appendChild(container);
+    });
+
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+
+function renderCharacterShoppingCart() {
+    const listEl = document.getElementById('character-shopping-cart-list');
+    const items = state.chats[activeCharacterPhoneId].characterPhoneData.shoppingCart;
+    listEl.innerHTML = '';
+    if (!items || items.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">购物车是空的</p>';
+        return;
+    }
+    items.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-cart-item';
+        itemEl.innerHTML = `
+            <div class="cart-item-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            </div>
+            <div class="cart-item-info">
+                <div class="title">${item.name}</div>
+                <div class="store">${item.store}</div>
+            </div>
+            <div class="cart-item-price">¥ ${item.price.toFixed(2)}</div>
+            <button class="item-delete-btn" data-type="shoppingCart" data-index="${index}">×</button>
+        `;
+        listEl.appendChild(itemEl);
+    });
+}
+function renderCharacterMemos() {
+    const listEl = document.getElementById('character-memos-list');
+    const items = state.chats[activeCharacterPhoneId].characterPhoneData.memos;
+    listEl.innerHTML = '';
+    if (!items || items.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">备忘录是空的</p>';
+        return;
+    }
+    items.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-data-item';
+        itemEl.innerHTML = `
+            <div class="title">${item.title}</div>
+            <div class="content">${item.content}</div>
+            <button class="item-delete-btn" data-type="memos" data-index="${index}">×</button>
+        `;
+        listEl.appendChild(itemEl);
+    });
+}
+
+
+// ▲▲▲ 新功能函数结束 ▲▲▲
+
+/**
+ * 【全新】在角色手机内部切换页面
+ * @param {string} pageId - 要显示的角色手机页面的ID
+ */
+function showCharacterPhonePage(pageId) {
+    // 1. 找到角色手机内部屏幕的所有页面
+    const pages = document.querySelectorAll('.character-phone-page');
+    // 2. 隐藏所有页面
+    pages.forEach(p => p.classList.remove('active'));
+    // 3. 显示目标页面
+    const pageToShow = document.getElementById(pageId);
+    if (pageToShow) {
+        pageToShow.classList.add('active');
+    }
+}
+
+// ▼▼▼ 【全新】角色手机新增APP渲染函数 ▼▼▼
+
+function renderCharacterBrowser() {
+    const listEl = document.getElementById('character-browser-list');
+    const items = state.chats[activeCharacterPhoneId].characterPhoneData.browserHistory;
+    listEl.innerHTML = '';
+    if (!items || items.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">浏览器历史为空</p>';
+        return;
+    }
+    items.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-browser-item';
+        itemEl.innerHTML = `
+            <span class="browser-item-icon">🌐</span>
+            <div class="title">${item.query}</div>
+            <button class="item-delete-btn" data-type="browserHistory" data-index="${index}">×</button>
+        `;
+        itemEl.addEventListener('click', (e) => {
+            if (e.target.classList.contains('item-delete-btn')) return;
+            document.getElementById('character-browser-detail-title').textContent = item.query;
+            document.getElementById('character-browser-detail-content').innerHTML = (item.result || "AI未生成详细内容。").replace(/\n/g, '<br>');
+            showCharacterPhonePage('character-browser-detail-screen');
+        });
+        listEl.appendChild(itemEl);
+    });
+}
+
+
+function renderCharacterPhotoAlbum() {
+    const gridEl = document.getElementById('character-album-grid');
+    const items = state.chats[activeCharacterPhoneId].characterPhoneData.photoAlbum;
+    gridEl.innerHTML = '';
+    if (!items || items.length === 0) {
+        gridEl.innerHTML = '<p style="grid-column: 1 / -1; text-align:center; color: #8a8a8a; margin-top: 50px;">相册里没有照片</p>';
+        return;
+    }
+    items.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-album-item';
+        itemEl.style.position = 'relative'; 
+        itemEl.innerHTML = `
+            <img src="https://i.postimg.cc/KYr2qRCK/1.jpg" alt="文字图">
+            <button class="item-delete-btn" data-type="photoAlbum" data-index="${index}" style="top: 10px; right: 10px; z-index: 1;">×</button>
+        `;
+        itemEl.addEventListener('click', (e) => {
+            if (e.target.classList.contains('item-delete-btn')) return;
+            showCustomAlert("图片内容", item.hiddenContent);
+        });
+        gridEl.appendChild(itemEl);
+    });
+}
+
+
+
+/**
+ * 【V2美化版】渲染角色手机 - 银行
+ */
+function renderCharacterBank() {
+    const detailsEl = document.getElementById('character-bank-details');
+    const bankData = state.chats[activeCharacterPhoneId].characterPhoneData.bank;
+    detailsEl.innerHTML = '';
+    
+    const balanceCard = document.createElement('div');
+    balanceCard.className = 'character-bank-balance-card';
+    balanceCard.innerHTML = `
+        <div class="label">账户余额</div>
+        <div class="amount">¥ ${(bankData.balance || 0).toFixed(2)}</div>
+    `;
+    detailsEl.appendChild(balanceCard);
+    
+    if (!bankData.transactions || bankData.transactions.length === 0) {
+        detailsEl.innerHTML += '<p style="text-align:center; color: #8a8a8a; margin-top: 30px;">暂无交易明细</p>';
+        return;
+    }
+    [...bankData.transactions].reverse().forEach((item, index) => {
+        const originalIndex = bankData.transactions.length - 1 - index;
+        const isIncome = item.type === '收入';
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-bank-transaction';
+        const iconBg = isIncome ? '#4CAF50' : '#E91E63';
+        const iconSvg = isIncome 
+            ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M7 10h10v4H7z" opacity=".3"/><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>`
+            : `<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-1 14H5c-.55 0-1-.45-1-1v-5h16v5c0 .55-.45 1-1 1zm1-10H4V7c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v2z"/></svg>`;
+
+        itemEl.innerHTML = `
+            <div class="transaction-details">
+                <div class="transaction-icon" style="background-color: ${iconBg};">${iconSvg}</div>
+                <div>
+                    <div class="title">${item.description}</div>
+                    <div class="meta" style="border:none; padding:0; margin-top:4px;"><span>${item.type}</span></div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="transaction-amount ${isIncome ? 'income' : 'expense'}">
+                    ${isIncome ? '+' : '-'} ${item.amount.toFixed(2)}
+                </span>
+                <button class="item-delete-btn" data-type="bank.transactions" data-index="${originalIndex}">×</button>
+            </div>
+        `;
+        detailsEl.appendChild(itemEl);
+    });
+}
+
+/**
+ * 【V2美化版】渲染角色手机 - 行动轨迹
+ */
+function renderCharacterTrajectory() {
+    const listEl = document.getElementById('character-trajectory-list');
+    const items = state.chats[activeCharacterPhoneId].characterPhoneData.trajectory;
+    listEl.innerHTML = '';
+    listEl.classList.add('character-trajectory-list');
+
+    if (!items || items.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">暂无足迹</p>';
+        return;
+    }
+    items.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-trajectory-item';
+        itemEl.innerHTML = `
+            <div class="trajectory-item-content">
+                <div class="title">${item.activity}</div>
+                <div class="meta">
+                    <span>📍 ${item.location}</span>
+                    <span style="margin-left: 10px;">🕒 ${item.time}</span>
+                </div>
+            </div>
+            <button class="item-delete-btn" data-type="trajectory" data-index="${index}">×</button>
+        `;
+        listEl.appendChild(itemEl);
+    });
+}
+
+/**
+ * 【V2美化版】渲染角色手机 - APP使用记录
+ */
+function renderCharacterAppUsage() {
+    const listEl = document.getElementById('character-app-usage-list');
+    const items = state.chats[activeCharacterPhoneId].characterPhoneData.appUsage;
+    listEl.innerHTML = '';
+     if (!items || items.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">暂无使用记录</p>';
+        return;
+    }
+    const durationsInMinutes = items.map(item => parseDurationToMinutes(item.duration));
+    const maxDuration = Math.max(...durationsInMinutes);
+    items.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-app-usage-item';
+        const durationInMinutes = durationsInMinutes[index];
+        const barWidth = maxDuration > 0 ? (durationInMinutes / maxDuration) * 100 : 0;
+        itemEl.innerHTML = `
+            <div class="app-usage-header">
+                <span class="name">${item.appName}</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="duration">${item.duration}</span>
+                    <button class="item-delete-btn" data-type="appUsage" data-index="${index}">×</button>
+                </div>
+            </div>
+            <div class="app-usage-bar-container">
+                <div class="app-usage-bar" style="width: ${barWidth}%;"></div>
+            </div>
+        `;
+        listEl.appendChild(itemEl);
+    });
+}
+
+
+/**
+ * 【日记 V4-最终修复版】渲染角色的日记列表
+ */
+function renderCharacterDiary() {
+    const listEl = document.getElementById('character-diary-list');
+    const items = state.chats[activeCharacterPhoneId].characterPhoneData.diary;
+    listEl.innerHTML = '';
+    if (!items || items.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">日记本还是空的，点击右上角写下第一篇日记吧。</p>';
+        return;
+    }
+    
+    [...items].reverse().forEach((item, index) => {
+        const originalIndex = items.length - 1 - index;
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-data-item';
+        const contentHtml = renderMarkdown(item.content);
+        itemEl.innerHTML = `
+            <div class="content">${contentHtml}</div>
+            <div class="meta">
+                <span>${new Date(item.timestamp).toLocaleString()}</span>
+            </div>
+            <button class="item-delete-btn" data-type="diary" data-index="${originalIndex}">×</button>
+        `;
+        listEl.appendChild(itemEl);
+    });
+}
+
+
+/**
+ * 【日记】独立刷新，生成新的日记条目
+ */
+async function generateNewDiaryEntry() {
+    if (!activeCharacterPhoneId) return;
+    const chat = state.chats[activeCharacterPhoneId];
+    if (!chat) return;
+
+    document.getElementById('generation-overlay').classList.add('visible');
+
+    try {
+        const persona = chat.settings.aiPersona;
+        const recentHistory = chat.history.slice(-20).map(msg => {
+            const sender = msg.role === 'user' ? '我' : chat.name;
+            return `${sender}: ${msg.content}`;
+        }).join('\n');
+
+// ▼▼▼ 在这里添加下面的代码 ▼▼▼
+let worldBookContext = '';
+if (chat.settings.linkedWorldBookIds && chat.settings.linkedWorldBookIds.length > 0) {
+    worldBookContext = '--- 世界观设定 (这是你必须严格遵守的背景) ---\n' +
+        chat.settings.linkedWorldBookIds.map(id => {
+            const book = state.worldBooks.find(b => b.id === id);
+            return book ? `[${book.name}]: ${book.content}` : '';
+        }).join('\n\n');
+}
+// ▲▲▲ 添加结束 ▲▲▲
+        
+        // 日记的专属Prompt (V2富文本版)
+        const diaryPrompt = `
+# 任务
+你现在是角色 "${chat.name}"。请你回顾一下最近和我的聊天，以及你的人设，然后用你的口吻写一篇日记。
+这篇日记是你内心的独白，可以记录你的感受、思考、计划或者秘密。
+内容要丰富、有深度，长度在100到300字之间。
+
+# 【【【重要：格式指令】】】
+你【必须】使用以下Markdown语法来丰富日记的格式，使其更具表现力：
+-   **标题**: 使用 \`#\` 或 \`##\` 来创建大标题和副标题。 (例如: \`# 今天的心情\`)
+-   **粗体**: 使用 \`**文字**\` 来强调重点。 (例如: \`今天真的**非常**开心。\`)
+-   **斜体**: 使用 \`*文字*\` 来表达情绪或内心想法。 (例如: \`*他到底是怎么想的呢...*\`)
+-   **删除线**: 使用 \`~~文字~~\` 来表示划掉或否定的想法。 (例如: \`我决定明天去<s>逛街</s>学习。\`)
+-   **遮挡/剧透**: 使用 \`||文字||\` 来隐藏秘密或悄悄话。 (例如: \`我偷偷准备了一个惊喜，||是一个手织的围巾||。\`)
+
+你的输出【必须且只能】是日记的正文内容，不要包含任何其他说明或JSON格式。
+
+# 你的信息
+- 你的名字: ${chat.name}
+- 你的人设: ${persona}
+${worldBookContext}
+
+# 最近聊天记录参考
+${recentHistory}
+`;
+
+        const { proxyUrl, apiKey, model } = state.apiConfig;
+        let isGemini = proxyUrl === GEMINI_API_URL;
+        let geminiConfig = toGeminiRequestData(model, apiKey, diaryPrompt, [{role: 'user', content: diaryPrompt}], isGemini);
+
+        const response = isGemini 
+            ? await fetch(geminiConfig.url, geminiConfig.data) 
+            : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+                body: JSON.stringify({
+                    model: model,
+                    messages: [{role: 'user', content: diaryPrompt}],
+                    temperature: 0.9, // 提高一点温度，让日记更有创造性
+                })
+            });
+
+        if (!response.ok) throw new Error('API请求失败');
+        
+        const data = await response.json();
+        const diaryContent = isGemini ? data.candidates[0].content.parts[0].text : data.choices[0].message.content;
+
+        // 创建新的日记对象并保存
+        const newEntry = {
+            timestamp: Date.now(),
+            content: diaryContent
+        };
+        
+        chat.characterPhoneData.diary.push(newEntry);
+        await db.chats.put(chat);
+        
+        // 刷新日记页面
+        renderCharacterDiary();
+        alert('新日记已生成！');
+
+    } catch (error) {
+        console.error("生成日记失败:", error);
+        alert(`生成失败: ${error.message}`);
+    } finally {
+        document.getElementById('generation-overlay').classList.remove('visible');
+    }
+}
+
+// ▲▲▲ 新增函数结束 ▲▲▲
+
+
         
         // ▼▼▼ 请将这些【新函数】粘贴到JS功能函数定义区 ▼▼▼
         
