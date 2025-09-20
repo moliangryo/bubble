@@ -26374,6 +26374,27 @@ document.getElementById('cleanup-data-btn').addEventListener('click', cleanupRed
             // ▲▲▲ 修改结束 ▲▲▲
         
         exitSelectionMode(); state.activeChatId = null; showScreen('chat-list-screen'); });
+
+            // ▼▼▼ 【全新】“查角色手机”功能事件监听器 ▼▼▼
+
+// 1. 绑定主屏幕上的“查手机”APP图标
+//    【核心修复】我们现在用 JS 来绑定事件，而不是用 HTML 的 onclick
+document.getElementById('check-phone-btn').addEventListener('click', openCharacterSelectionScreen);
+
+// 2. 角色选择列表的点击事件 (事件委托)
+document.getElementById('character-selection-list').addEventListener('click', (e) => {
+    const item = e.target.closest('.character-select-item');
+    if (item && item.dataset.chatId) {
+        openCharacterPhone(item.dataset.chatId);
+    }
+});
+
+// 3. 角色手机顶部的“刷新”和“清空”按钮
+document.getElementById('generate-character-data-btn').addEventListener('click', generateCharacterPhoneData);
+document.getElementById('clear-character-data-btn').addEventListener('click', clearCharacterPhoneData);
+
+// ▲▲▲ 事件监听器添加结束 ▲▲▲
+
                     
         // ▼▼▼ 【请用这个新版本】替换旧的 add-chat-btn 事件监听器 ▼▼▼
         document.getElementById('add-chat-btn').addEventListener('click', async () => {
@@ -30512,14 +30533,7 @@ document.getElementById('status-bar-toggle-switch').addEventListener('change', (
     </div>
     <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 
-    // 绑定“查手机”桌面图标点击事件
-document.getElementById('check-phone-btn').addEventListener('click', async () => {
-    // 打开角色手机选择界面
-    await openCharacterSelectionScreen();
-
-    // 可以顺便切换到角色手机主页（APP网格）
-    showCharacterPhonePage('character-phone-app-grid');
-});
+    
 
 </body>
 </html>
