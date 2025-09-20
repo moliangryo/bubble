@@ -6413,16 +6413,21 @@
     gap: 25px;
     align-content: start;
 }
-#desktop-dock {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    padding: 15px 25px;
+
+   #desktop-dock {
+    background-color: rgba(255, 255, 255, 0.15); /* 保持背景色 */
+    border-radius: 20px; /* 保持圆角 */
+    padding: 15px 25px; /* 保持内边距 */
     display: flex;
     justify-content: center;
     gap: 30px;
-    width: fit-content;
-    flex-shrink: 0;
+    width: 100%; /* 确保底部 Dock 占据整个屏幕宽度 */
+    position: fixed; /* 让底部 Dock 固定在屏幕底部 */
+    bottom: 0; /* 确保它位于屏幕底部 */
+    left: 0; /* 向左对齐 */
+    z-index: 10; /* 确保它在其他元素之上 */
 }
+
 .desktop-app-icon {
     display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center;
 }
