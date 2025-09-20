@@ -6443,56 +6443,11 @@
     cursor: pointer;
     opacity: 0.9;
 }
-/* ▲▲▲ 替换结束 ▲▲▲ */
-/* ▼▼▼ 【全新】这是为小组件编辑功能添加的样式 ▼▼▼ */
 
-/* 为可编辑的元素添加可点击的光标和过渡效果 */
-.editable-text, .editable-image {
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-
-/* 鼠标悬停时，显示一个半透明的虚线外框，并轻微变暗，提供视觉反馈 */
-.editable-text:hover, .editable-image:hover {
-    outline: 2px dashed rgba(255, 255, 255, 0.8);
-    opacity: 0.9;
-    border-radius: 4px; /* 让外框也有一点圆角 */
-}
 
 /* ▲▲▲ 新增CSS结束 ▲▲▲ */
 
-/* ▼▼▼ 【方案A：仅背景渐变，文字保持实体】(可能导致底部文字可读性下降) ▼▼▼ */
 
-#profile-widget .profile-info {
-    /* 1. 将卡片本身的背景设为透明 */
-    background: transparent !important;
-    /* 2. 建立定位上下文，让伪元素可以相对于它定位 */
-    position: relative;
-    z-index: 1; /* 确保文字内容在背景之上 */
-}
-
-#profile-widget .profile-info::before {
-    /* 3. 创建一个伪元素作为新的背景层 */
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    
-    /* 4. 将原本的白色背景和圆角应用到这个背景层上 */
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 24px;
-    
-    /* 5. 【核心】只对这个背景层应用渐变消失效果 */
-    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-    
-    /* 6. 将背景层放到文字内容的后面 */
-    z-index: -1;
-}
-
-/* ▲▲▲ 新增CSS结束 ▲▲▲ */
 /* ▼▼▼ 【全新】聊天设置页面样式 ▼▼▼ */
 #chat-settings-screen {
     /* 确保页面是 Flex 容器，让内容区可以正确地拉伸 */
