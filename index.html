@@ -6426,6 +6426,7 @@
     bottom: 0; /* 确保它位于屏幕底部 */
     left: 0; /* 向左对齐 */
     z-index: 10; /* 确保它在其他元素之上 */
+     display: none; /* 默认隐藏 */
 }
 
 /* 当页面是主屏幕时，显示底部 Dock */
@@ -10066,6 +10067,17 @@ commentActions.forEach(action => {
                         mainHeader.style.display = 'none';
                         mainBottomNav.style.display = 'none';
                     }
+                    if (viewId === 'home-screen') {
+    // 显示底部 Dock
+    desktopDock.style.display = 'flex';  // 或者根据你的需求设置为 'block'
+    mainHeader.style.display = 'flex';
+    mainBottomNav.style.display = 'flex';
+} else {
+    // 隐藏底部 Dock
+    desktopDock.style.display = 'none';
+    mainHeader.style.display = 'none';
+    mainBottomNav.style.display = 'none';
+}
                     // ▲▲▲ 修正结束 ▲▲▲
         
             if (viewId !== 'memories-view') {
