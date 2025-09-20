@@ -6809,26 +6809,23 @@
                 
             </div>
             <!-- 右侧App图标容器 -->
-            <div id="desktop-app-container">
-                <div class="desktop-app-icon" onclick="showScreen('chat-list-screen')">
-                    <div class="icon-bg-desktop"><img id="icon-img-qq" src="https://i.postimg.cc/MTC3Tkw8/IMG-6436.jpg" alt="QQ"></div>
-                    <span class="label">QQ</span>
-                </div>
-                <div class="desktop-app-icon" onclick="showScreen('world-book-screen')">
-                    <div class="icon-bg-desktop"><img id="icon-img-world-book" src="https://i.postimg.cc/HWf1JKzn/IMG-6435.jpg" alt="世界书"></div>
-                    <span class="label">世界书</span>
-                </div>
+                <div id="desktop-app-container">
+                <div class="desktop-app-icon" onclick="showScreen('chat-list-screen')"><div class="icon-bg-desktop"><img id="icon-img-qq" src="https://i.postimg.cc/MTC3Tkw8/IMG-6436.jpg" alt="QQ"></div><span class="label">QQ</span></div>
+                <div class="desktop-app-icon" onclick="showScreen('world-book-screen')"><div class="icon-bg-desktop"><img id="icon-img-world-book" src="https://i.postimg.cc/HWf1JKzn/IMG-6435.jpg" alt="世界书"></div><span class="label">世界书</span></div>
+<!-- ▼▼▼ 核心修改：移除 onclick，添加 id ▼▼▼ -->
+<div id="check-phone-btn" class="desktop-app-icon">
+    <div class="icon-bg-desktop"><img id="icon-img-check-phone" src="https://i.postimg.cc/RVwpwr0r/IMG-8348.jpg" alt="查手机"></div>
+    <span class="label">查手机</span>
+</div>
+<!-- ▲▲▲ 修改结束 ▲▲▲ -->
                 <div class="desktop-app-icon" onclick="showScreen('wallpaper-screen')">
                     <div class="icon-bg-desktop"><img id="icon-img-wallpaper" src="https://i.postimg.cc/T1j03pQr/IMG-6440.jpg" alt="外观设置"></div>
                     <span class="label">外观设置</span>
                 </div>
-                <div class="desktop-app-icon" onclick="openRenderingRulesScreen()">
-                    <div class="icon-bg-desktop"><img id="icon-img-renderer" src="https://s3plus.meituan.net/opapisdk/op_ticket_885190757_1756312261242_qdqqd_g0eriz.jpeg" alt="渲染器"></div>
-                    <span class="label">渲染器</span>
-                </div>
             </div>
         </div>
     </div>
+
 
     <!-- 底部 Dock 应用 -->
     <div id="desktop-dock">
