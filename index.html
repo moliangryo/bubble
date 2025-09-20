@@ -30511,6 +30511,16 @@ document.getElementById('status-bar-toggle-switch').addEventListener('change', (
         </div>
     </div>
     <!-- ▲▲▲ 替换结束 ▲▲▲ -->
+
+    // 绑定“查手机”桌面图标点击事件
+document.getElementById('check-phone-btn').addEventListener('click', async () => {
+    // 打开角色手机选择界面
+    await openCharacterSelectionScreen();
+
+    // 可以顺便切换到角色手机主页（APP网格）
+    showCharacterPhonePage('character-phone-app-grid');
+});
+
 </body>
 </html>
 
