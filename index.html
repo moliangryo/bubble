@@ -28944,6 +28944,358 @@ async function handlePostClick(e) {
             }
         });
         // ▲▲▲ 新事件监听器粘贴结束 ▲▲▲
+
+        // ▼▼▼ 【全新】“查角色手机”功能事件监听器 ▼▼▼
+
+            // 1. 绑定主屏幕上的“查手机”APP图标
+            const checkPhoneAppIcon = document.querySelector('.app-icon[data-app-id="check-phone"]');
+            if (checkPhoneAppIcon) {
+                checkPhoneAppIcon.onclick = openCharacterSelectionScreen; // 修改onclick事件
+            }
+
+            // 2. 角色选择列表的点击事件 (事件委托)
+            document.getElementById('character-selection-list').addEventListener('click', (e) => {
+                const item = e.target.closest('.character-select-item');
+                if (item && item.dataset.chatId) {
+                    openCharacterPhone(item.dataset.chatId);
+                }
+            });
+
+            // 【V3版】角色手机聊天列表的点击事件 (事件委托)
+            document.getElementById('character-chat-list').addEventListener('click', (e) => {
+                const item = e.target.closest('.chat-list-item');
+                // 从 data-contact-name 获取要打开的聊天对象的名字
+                if (item && item.dataset.contactName) {
+                    renderCharacterChatHistory(item.dataset.contactName);
+                    showCharacterPhonePage('character-chat-history-screen');
+                }
+            });
+
+            // 3. 角色手机顶部的“刷新”和“清空”按钮
+            document.getElementById('generate-character-data-btn').addEventListener('click', generateCharacterPhoneData);
+            document.getElementById('clear-character-data-btn').addEventListener('click', clearCharacterPhoneData);
+
+            // ▲▲▲ 事件监听器添加结束 ▲▲▲
+
+            // ▼▼▼ 【全新】角色手机内部统一返回事件监听器 ▼▼▼
+            document.getElementById('character-phone-container').addEventListener('click', (e) => {
+                const backBtn = e.target.closest('.back-btn');
+                if (!backBtn) return;
+
+                // 检查是返回到角色手机内部页面，还是返回到主屏幕
+                if (backBtn.dataset.targetPage) {
+                    showCharacterPhonePage(backBtn.dataset.targetPage);
+                } else if (backBtn.dataset.targetScreen) {
+                    showScreen(backBtn.dataset.targetScreen);
+                }
+            });
+            // ▲▲▲ 新代码粘贴结束 ▲▲▲
+
+            // ▼▼▼ 【全新】角色手机日记APP事件监听器 ▼▼▼
+            document.getElementById('character-app-grid').addEventListener('click', (e) => {
+                const icon = e.target.closest('.app-icon');
+                if (icon && icon.querySelector('.label').textContent === '日记') {
+                    renderCharacterDiary();
+                }
+            });
+            document.getElementById('generate-diary-entry-btn').addEventListener('click', generateNewDiaryEntry);
+            // ▲▲▲ 新代码粘贴结束 ▲▲▲
+// ▼▼▼ 【全新】“查手机”内容单条删除功能事件绑定 ▼▼▼
+document.getElementById('character-phone-container').addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.item-delete-btn');
+    if (deleteBtn) {
+        // 【新增】处理微信消息删除
+        if (deleteBtn.classList.contains('message-delete-btn')) {
+            const contactName = deleteBtn.dataset.contactName;
+            const index = parseInt(deleteBtn.dataset.index);
+            if (contactName && !isNaN(index)) {
+                handleCharacterChatMessageDeletion(contactName, index);
+            }
+        } 
+        // 处理其他列表删除
+        else {
+            const dataType = deleteBtn.dataset.type;
+            const index = parseInt(deleteBtn.dataset.index);
+            if (dataType && !isNaN(index)) {
+                handleCharacterDataDeletion(dataType, index);
+            }
+        }
+    }
+});
+// ▲▲▲ 删除功能事件绑定结束 ▲▲▲
+
+// ▼▼▼ 【全新】NPC库管理功能事件绑定 ▼▼▼
+
+// 聊天设置里的“管理NPC库”按钮
+document.getElementById('chat-settings-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'manage-npcs-btn') {
+        // 先关闭聊天设置，再打开NPC管理
+        document.getElementById('chat-settings-modal').classList.remove('visible');
+        openNpcManager();
+    }
+});
+
+// NPC管理界面的返回按钮
+document.getElementById('back-from-npc-management').addEventListener('click', () => {
+    // 返回时，重新打开聊天设置
+    showScreen('chat-interface-screen');
+    document.getElementById('chat-settings-btn').click();
+});
+
+// NPC管理界面的“+”按钮
+document.getElementById('add-new-npc-btn').addEventListener('click', () => openNpcEditor(null));
+
+
+
+// ▼▼▼ 【全新】粘贴这整块事件监听器代码 ▼▼▼
+// --- 后台活动设置界面的事件绑定 ---
+
+// 1. 总开关的事件
+document.getElementById('background-activity-switch').addEventListener('change', () => {
+    // 每次点击总开关，都重新渲染一次详细设置区（它会根据开关状态自动显示或隐藏）
+    renderBackgroundFrequencySelector();
+});
+
+// 2. 全选按钮
+document.getElementById('bg-select-all-chars').addEventListener('click', () => {
+    document.querySelectorAll('.bg-char-checkbox').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+});
+
+// 3. 全不选按钮
+document.getElementById('bg-deselect-all-chars').addEventListener('click', () => {
+    document.querySelectorAll('.bg-char-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+});
+
+// 这是修复后的新代码块，用它替换掉旧的
+document.querySelector('#background-activity-details').addEventListener('click', async (e) => { // 注意这里加了 async
+    if (e.target.classList.contains('bg-freq-btn')) {
+        const freq = e.target.dataset.freq;
+        const selectedCheckboxes = document.querySelectorAll('.bg-char-checkbox:checked');
+        
+        if (selectedCheckboxes.length === 0) {
+            alert('请先选择至少一个角色！');
+            return;
+        }
+
+        const config = state.globalSettings.backgroundActivityConfig || {};
+        selectedCheckboxes.forEach(checkbox => {
+            const chatId = checkbox.dataset.chatId;
+            if (freq === 'none') {
+                delete config[chatId];
+            } else {
+                config[chatId] = freq;
+            }
+        });
+        
+        state.globalSettings.backgroundActivityConfig = config;
+        
+        // ★★★★★ 这就是我们新加的关键代码！★★★
+        await db.globalSettings.put(state.globalSettings);
+        // ★★★★★ 添加结束 ★★★★★
+        
+        renderBackgroundFrequencySelector();
+
+        const freqTextMap = {low:'低', medium:'中', high:'高', none: '关闭'};
+        const freqText = freqTextMap[freq];
+        alert(`已为 ${selectedCheckboxes.length} 个角色将后台活动频率设为 "${freqText}"`);
+    }
+});
+// 使用事件委托，为所有可编辑元素统一绑定点击事件
+document.getElementById('home-screen').addEventListener('click', (e) => {
+    const target = e.target;
+    // 检查点击的是否是可编辑的文字
+    if (target.classList.contains('editable-text')) {
+        handleEditText(target);
+    }
+    // 检查点击的是否是可编辑的图片
+    if (target.classList.contains('editable-image')) {
+        handleEditImage(target);
+    }
+});
+// ▼▼▼ 步骤 2.2：在 init() 函数的最末尾，粘贴这整块全新的滑动逻辑 ▼▼▼
+
+const homeScreenSlider = document.querySelector('.home-screen-slider');
+const dots = document.querySelectorAll('.pagination-dots .dot');
+if (homeScreenSlider && dots.length > 0) {
+    let currentPage = 0;
+    let touchStartX = 0;
+    let isDragging = false;
+
+    function updateDots() {
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentPage);
+        });
+    }
+
+    function slideToPage(pageIndex) {
+        currentPage = pageIndex;
+        const offset = - (currentPage * 100);
+        homeScreenSlider.style.transform = `translateX(${offset}%)`;
+        updateDots();
+    }
+    
+    function getEventX(e) {
+        return e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    }
+
+    function handleTouchStart(e) {
+        isDragging = true;
+        touchStartX = getEventX(e);
+        homeScreenSlider.style.transition = 'none';
+    }
+
+    function handleTouchMove(e) {
+        if (!isDragging) return;
+        const currentX = getEventX(e);
+        const diffX = currentX - touchStartX;
+        const baseOffset = - (currentPage * 100);
+        homeScreenSlider.style.transform = `translateX(calc(${baseOffset}% + ${diffX}px))`;
+    }
+
+    function handleTouchEnd(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        homeScreenSlider.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        const touchEndX = e.type.includes('touch') ? e.changedTouches[0].clientX : e.clientX;
+        const diffX = touchEndX - touchStartX;
+        const threshold = 50;
+
+        if (diffX < -threshold && currentPage < dots.length - 1) {
+            currentPage++;
+        } else if (diffX > threshold && currentPage > 0) {
+            currentPage--;
+        }
+        slideToPage(currentPage);
+    }
+    
+    const homeScreenContainer = document.getElementById('home-screen');
+    homeScreenContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+    homeScreenContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+    homeScreenContainer.addEventListener('touchend', handleTouchEnd);
+    homeScreenContainer.addEventListener('mousedown', handleTouchStart);
+    document.addEventListener('mousemove', handleTouchMove);
+    document.addEventListener('mouseup', handleTouchEnd);
+}
+
+// ▲▲▲ 滑动逻辑粘贴结束 ▲▲▲
+// ▼▼▼ 【全新】“查手机”内容单条删除功能 ▼▼▼
+/**
+ * 处理角色手机内数据删除的通用函数
+ * @param {string} dataType - 要删除的数据类型, 比如 'memos', 'shoppingCart'
+ * @param {number} index - 要删除的数据在数组中的索引
+ */
+async function handleCharacterDataDeletion(dataType, index) {
+    if (!activeCharacterPhoneId) return;
+    const chat = state.chats[activeCharacterPhoneId];
+    
+    let dataArray;
+    // 【核心修改】处理像 bank.transactions 这样的嵌套数据
+    if (dataType.includes('.')) {
+        const keys = dataType.split('.');
+        dataArray = chat.characterPhoneData[keys[0]][keys[1]];
+    } else {
+        dataArray = chat.characterPhoneData[dataType];
+    }
+
+    if (!chat || !dataArray) return;
+
+    const itemToDelete = dataArray[index];
+    if (!itemToDelete) return;
+
+    const confirmed = await showCustomConfirm(
+        '确认删除',
+        '确定要删除这条记录吗？',
+        { confirmButtonClass: 'btn-danger' }
+    );
+
+    if (confirmed) {
+        dataArray.splice(index, 1);
+        await db.chats.put(chat);
+        
+        // 根据删除的类型，重新渲染对应的APP界面
+        switch(dataType) {
+            case 'memos': renderCharacterMemos(); break;
+            case 'shoppingCart': renderCharacterShoppingCart(); break;
+            case 'browserHistory': renderCharacterBrowser(); break;
+            case 'diary': renderCharacterDiary(); break;
+            case 'bank.transactions': renderCharacterBank(); break; // 新增
+            case 'trajectory': renderCharacterTrajectory(); break;   // 新增
+            case 'appUsage': renderCharacterAppUsage(); break;       // 新增
+            case 'photoAlbum': renderCharacterPhotoAlbum(); break;   // 新增
+        }
+        alert('记录已删除。');
+    }
+}
+// 使用事件委托来处理所有删除按钮的点击
+document.getElementById('character-phone-container').addEventListener('click', (e) => {
+    if (e.target.classList.contains('item-delete-btn')) {
+        const dataType = e.target.dataset.type;
+        const index = parseInt(e.target.dataset.index);
+        if (dataType && !isNaN(index)) {
+            handleCharacterDataDeletion(dataType, index);
+        }
+    }
+});
+// ▲▲▲ 删除功能结束 ▲▲▲
+// ▼▼▼ 【全新】“查手机”内容单条删除功能 ▼▼▼
+/**
+ * 处理角色手机内数据删除的通用函数
+ * @param {string} dataType - 要删除的数据类型, 比如 'memos', 'shoppingCart'
+ * @param {number} index - 要删除的数据在数组中的索引
+ */
+async function handleCharacterDataDeletion(dataType, index) {
+    if (!activeCharacterPhoneId) return;
+    const chat = state.chats[activeCharacterPhoneId];
+    
+    let dataArray;
+    // 处理像 bank.transactions 这样的嵌套数据
+    if (dataType.includes('.')) {
+        const keys = dataType.split('.');
+        dataArray = chat.characterPhoneData[keys[0]][keys[1]];
+    } else {
+        dataArray = chat.characterPhoneData[dataType];
+    }
+
+    if (!chat || !dataArray) return;
+
+    const itemToDelete = dataArray[index];
+    if (!itemToDelete) return;
+
+    const confirmed = await showCustomConfirm(
+        '确认删除',
+        '确定要删除这条记录吗？',
+        { confirmButtonClass: 'btn-danger' }
+    );
+
+    if (confirmed) {
+        dataArray.splice(index, 1);
+        await db.chats.put(chat);
+        
+        // 根据删除的类型，重新渲染对应的APP界面
+        switch(dataType) {
+            case 'memos': renderCharacterMemos(); break;
+            case 'shoppingCart': renderCharacterShoppingCart(); break;
+            case 'browserHistory': renderCharacterBrowser(); break;
+            case 'diary': renderCharacterDiary(); break;
+            case 'bank.transactions': renderCharacterBank(); break;
+            case 'trajectory': renderCharacterTrajectory(); break;
+            case 'appUsage': renderCharacterAppUsage(); break;
+            case 'photoAlbum': renderCharacterPhotoAlbum(); break;
+        }
+        alert('记录已删除。');
+    }
+}
+// ▲▲▲ 删除功能结束 ▲▲▲
+
+
+
+// ▲▲▲ 新事件绑定结束 ▲▲▲
+
         
           // ▼▼▼ 【全新】AI头像库功能事件绑定 ▼▼▼
         document.getElementById('manage-ai-avatar-library-btn').addEventListener('click', openAiAvatarLibraryModal);
