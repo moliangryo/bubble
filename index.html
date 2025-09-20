@@ -6414,7 +6414,7 @@
     align-content: start;
 }
 
-   #desktop-dock {
+ #desktop-dock {
     background-color: rgba(255, 255, 255, 0.15); /* 保持背景色 */
     border-radius: 20px; /* 保持圆角 */
     padding: 15px 25px; /* 保持内边距 */
@@ -6425,7 +6425,15 @@
     position: fixed; /* 让底部 Dock 固定在屏幕底部 */
     bottom: 0; /* 确保它位于屏幕底部 */
     left: 0; /* 向左对齐 */
+    z-index: 10; /* 确保它在其他元素之上 */
+    display: none; /* 默认隐藏 */
 }
+
+/* 当页面是主屏幕时，显示底部 Dock */
+#home-screen #desktop-dock {
+    display: flex; /* 显示底部 Dock */
+}
+
 
 .desktop-app-icon {
     display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center;
