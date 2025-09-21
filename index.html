@@ -23378,8 +23378,49 @@ async function clearCharacterPhoneData() {
  * 渲染角色手机的聊天列表
  */
 function renderCharacterChatList() {
-    // ...
+    // ▼▼▼ 【全新】请将这个缺失的函数粘贴到您的代码中 ▼▼▼
+
+/**
+ * 渲染角色手机的购物车页面
+ */
+function renderCharacterShoppingCart() {
+    
 }
+    const listEl = document.getElementById('character-shopping-cart-list');
+    const chat = state.chats[activeCharacterPhoneId];
+    if (!chat || !chat.characterPhoneData || !chat.characterPhoneData.shoppingCart) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">数据加载错误</p>';
+        return;
+    }
+
+    const cart = chat.characterPhoneData.shoppingCart;
+    listEl.innerHTML = '';
+
+    if (cart.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: #8a8a8a; margin-top: 50px;">购物车是空的</p>';
+        return;
+    }
+
+    cart.forEach((item, index) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'character-cart-item';
+        // 添加删除按钮
+        itemEl.innerHTML = `
+            <div class="cart-item-icon">🛒</div>
+            <div class="cart-item-info">
+                <div class="title">${item.name}</div>
+                <div class="store">${item.store || '未知店铺'}</div>
+            </div>
+            <div class="cart-item-price">¥${item.price.toFixed(2)}</div>
+            <button class="item-delete-btn" data-type="shoppingCart" data-index="${index}" title="删除此项">×</button>
+        `;
+        listEl.appendChild(itemEl);
+    });
+}
+
+// ▲▲▲ 粘贴结束 ▲▲▲
+    // ...
+
 
 // ... (等等)
 // ▼▼▼ 【全新】请将这个缺失的函数粘贴到您的代码中 ▼▼▼
