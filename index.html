@@ -29532,6 +29532,14 @@ document.getElementById('status-bar-toggle-switch').addEventListener('change', (
             <div class="modal-body" id="search-results-list" style="padding: 0;">
                 <!-- 搜索结果将由JS动态生成在这里 -->
             </div>
+            <div id="character-selection-screen" class="screen">
+    <div class="header">
+        <span class="back-btn" onclick="showScreen('home-screen')">‹</span>
+        <span>选择要查看的手机</span>
+        <span style="width: 30px;"></span> </div>
+    <div id="character-selection-list" class="list-container">
+        </div>
+</div>
             <!-- 【核心修改2】更新底部按钮 -->
             <div class="modal-footer">
                 <button class="cancel" id="cancel-music-search-btn">取消</button>
