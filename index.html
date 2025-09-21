@@ -26282,7 +26282,9 @@ audioPlayer.addEventListener('play', () => {
             applyAppIcons(); // 重新应用所有图标
         
             alert('外观设置已保存并应用！');
-        // ▼▼▼ 【全新】“查角色手机”功能事件监听器 ▼▼▼
+       
+        });
+         // ▼▼▼ 【全新】“查角色手机”功能事件监听器 ▼▼▼
 
 // 1. 绑定主屏幕上的“查手机”APP图标
 document.getElementById('check-phone-btn').addEventListener('click', openCharacterSelectionScreen);
@@ -26344,7 +26346,6 @@ document.getElementById('character-phone-container').addEventListener('click', (
 
 // ▲▲▲ 事件监听器添加结束 ▲▲▲
             showScreen('home-screen');
-        });
         // ▲▲▲ 替换结束 ▲▲▲
         // ▼▼▼ 【请用这个新版本】替换旧的 save-api-settings-btn 事件监听器 ▼▼▼
         document.getElementById('save-api-settings-btn').addEventListener('click', async () => {
