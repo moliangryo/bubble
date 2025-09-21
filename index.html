@@ -26160,6 +26160,18 @@ document.getElementById('cleanup-data-btn').addEventListener('click', cleanupRed
                     history: [], musicData: { totalTime: 0 },
     longTermMemory: [], // <--- 在这里添加这一行
     npcs: [] // <-- 【新增】一个空的NPC数组
+                // ▼▼▼ 在这里添加下面一整块新属性 ▼▼▼
+    characterPhoneData: {
+        lastGenerated: null,
+        chats: {},
+        shoppingCart: [],
+        memos: [],
+        browserHistory: [],
+        photoAlbum: [],
+        bank: { balance: 0, transactions: [] },
+        trajectory: [],
+        appUsage: [],
+        diary: []
                 };
                 state.chats[newChatId] = newChat;
                 await db.chats.put(newChat);
