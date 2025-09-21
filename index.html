@@ -26172,6 +26172,8 @@ document.getElementById('cleanup-data-btn').addEventListener('click', cleanupRed
         trajectory: [],
         appUsage: [],
         diary: []
+                }
+    // ▲▲▲ 添加结束 ▲▲▲
                 };
                 state.chats[newChatId] = newChat;
                 await db.chats.put(newChat);
