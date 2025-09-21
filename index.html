@@ -12857,12 +12857,47 @@ if (!state.globalSettings.widgetData) {
                 }
             }
         
-            let avatarHtml;
-            if (avatarFrameSrc) {
-                avatarHtml = `<div class="avatar-with-frame"><img src="${avatarSrc}" class="avatar-img"><img src="${avatarFrameSrc}" class="avatar-frame"></div>`;
-            } else {
-                avatarHtml = `<img src="${avatarSrc}" class="avatar">`;
-            }
+            // ▼▼▼ 请用这段代码完整替换上面那一段 ▼▼▼
+const isAI = !isUser;
+const avatarGroupEl = document.createElement('div');
+avatarGroupEl.className = `avatar-group ${avatarFrameSrc ? 'has-frame' : ''}`;
+
+if (avatarFrameSrc) {
+    const avatarWithFrame = document.createElement('div');
+    avatarWithFrame.className = 'avatar-with-frame';
+    const avatarImg = document.createElement('img');
+    avatarImg.src = avatarSrc;
+    avatarImg.className = 'avatar-img';
+    const avatarFrameImg = document.createElement('img');
+    avatarFrameImg.src = avatarFrameSrc;
+    avatarFrameImg.className = 'avatar-frame';
+
+    avatarWithFrame.appendChild(avatarImg);
+    avatarWithFrame.appendChild(avatarFrameImg);
+    avatarGroupEl.appendChild(avatarWithFrame);
+    
+    if (isAI) {
+        // 为AI角色的头像容器添加点击事件
+        avatarWithFrame.addEventListener('click', () => {
+            showPage('character-profile-page', chat.id);
+        });
+    }
+} else {
+    const avatarImg = document.createElement('img');
+    avatarImg.src = avatarSrc;
+    avatarImg.className = 'avatar';
+    avatarGroupEl.appendChild(avatarImg);
+
+    if (isAI) {
+        // 为AI角色的头像图片添加点击事件
+        avatarImg.addEventListener('click', () => {
+            showPage('character-profile-page', chat.id);
+        });
+    }
+}
+
+let avatarHtml = avatarGroupEl.outerHTML;
+// ▲▲▲ 替换结束 ▲▲▲
             const hasFrameClass = avatarFrameSrc ? 'has-frame' : '';
             const avatarGroupHtml = `<div class="avatar-group ${hasFrameClass}">${avatarHtml}</div>`;
             
