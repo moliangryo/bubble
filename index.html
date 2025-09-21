@@ -23382,7 +23382,91 @@ function renderCharacterChatList() {
 }
 
 // ... (等等)
+// ▼▼▼ 【全新】请将这个缺失的函数粘贴到您的代码中 ▼▼▼
 
+/**
+ * 【AI核心】为角色生成一篇新的日记
+ */
+async function generateNewDiaryEntry() {
+    if (!activeCharacterPhoneId) return;
+    const chat = state.chats[activeCharacterPhoneId];
+    if (!chat) return;
+
+    const diaryBtn = document.getElementById('generate-diary-entry-btn');
+    const originalSvg = diaryBtn.innerHTML;
+    diaryBtn.innerHTML = '...'; // 显示加载状态
+    diaryBtn.disabled = true;
+
+    try {
+        const userNickname = state.qzoneSettings.nickname || '我';
+        const persona = chat.settings.aiPersona;
+        const recentHistory = chat.history.slice(-10).map(msg => {
+            const sender = msg.role === 'user' ? userNickname : chat.name;
+            return `${sender}: ${msg.content}`;
+        }).join('\\n');
+
+        // 一个专门用于写日记的、高度优化的AI指令
+        const prompt = `
+# 你的任务
+你现在是角色“${chat.name}”。请你根据你的角色设定和最近与用户的对话，以【第一人称】写一篇简短的日记。
+
+# 核心规则
+1.  **【【【第一人称】】】**: 必须使用“我”作为主语。
+2.  **【【【情感真实】】】**: 日记内容必须深度结合你的人设，反映出你此刻的真实心情、困惑、喜悦或思考。
+3.  **【【【关联对话】】】**: 日记内容应该与下方提供的“最近对话摘要”有一定关联，但不要只是复述对话。
+4.  **输出格式**: 你的回复【必须且只能】是一个JSON对象，格式如下：
+    \`{"title": "一个简洁的日记标题", "content": "日记的正文内容。"}\`
+
+# 你的角色设定
+${persona}
+
+# 最近对话摘要 (供你参考)
+${recentHistory}
+
+现在，请开始写这篇日记。`;
+
+        const { proxyUrl, apiKey, model } = state.apiConfig;
+        if (!proxyUrl || !apiKey || !model) throw new Error('API未配置');
+
+        let isGemini = proxyUrl.includes('generativelanguage');
+        let geminiConfig = toGeminiRequestData(model, apiKey, prompt, [{role: 'user', content: "请开始写日记。"}]);
+
+        const response = isGemini 
+            ? await fetch(geminiConfig.url, geminiConfig.data) 
+            : await fetch(`${proxyUrl}/v1/chat/completions`, { /* ... OpenAI API call ... */ });
+
+        if (!response.ok) throw new Error('API请求失败');
+
+        const data = await response.json();
+        const aiResponseContent = getGeminiResponseText(data).replace(/^```json\s*|\s*```$/g, '');
+        const newEntry = JSON.parse(aiResponseContent);
+
+        if (newEntry.title && newEntry.content) {
+            if (!chat.characterPhoneData.diary) {
+                chat.characterPhoneData.diary = [];
+            }
+            // 将新日记添加到数组的开头
+            chat.characterPhoneData.diary.unshift({
+                ...newEntry,
+                timestamp: Date.now()
+            });
+            await db.chats.put(chat);
+            renderCharacterDiary(); // 重新渲染日记列表
+            await showCustomAlert("成功", "新日记已生成！");
+        } else {
+            throw new Error("AI返回的日记格式不正确。");
+        }
+
+    } catch (error) {
+        console.error("生成新日记失败:", error);
+        await showCustomAlert(`生成失败`, error.message);
+    } finally {
+        diaryBtn.innerHTML = originalSvg; // 恢复按钮图标
+        diaryBtn.disabled = false;
+    }
+}
+
+// ▲▲▲ 粘贴结束 ▲▲▲
 // ▲▲▲ “查角色手机”功能函数结束 ▲▲▲
         // ▼▼▼ 【最终PNG导入修复】请用这一整块代码，替换旧的 handleCardImport 函数 ▼▼▼
         
