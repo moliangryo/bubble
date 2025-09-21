@@ -6414,14 +6414,26 @@
     align-content: start;
 }
 #desktop-dock {
+    /* 核心修改: 确保它固定在最底部 */
+    position: fixed;
+    bottom: 0;
+    left: 50%; /* 水平居中 */
+    transform: translateX(-50%); /* 水平居中 */
+    
+    /* 保持原有的美化样式 */
     background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px); /* 增加毛玻璃效果，更美观 */
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 15px 25px;
     display: flex;
     justify-content: center;
     gap: 30px;
-    width: 100%; /* 确保底部 Dock 占据整个屏幕宽度 */
-    flex-shrink: 0;
+    z-index: 100; /* 确保它在其他内容上方 */
+    
+    /* 关键：为iPhoneX等底部“小黑条”留出安全距离 */
+    padding-bottom: calc(15px + env(safe-area-inset-bottom));
+
    
 }
 .desktop-app-icon {
@@ -10013,6 +10025,15 @@ commentActions.forEach(action => {
                     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                     const screenToShow = document.getElementById(screenId);
                     if (screenToShow) screenToShow.classList.add('active');
+                    // 新增: 控制底部Dock的显隐
+const dock = document.getElementById('desktop-dock');
+if (dock) {
+    if (screenId === 'home-screen') { // 根据您的页面ID，通常桌面主页的ID是 'home-screen'
+        dock.style.display = 'flex'; // 显示 Dock
+    } else {
+        dock.style.display = 'none'; // 隐藏 Dock
+    }
+}
                     if (screenId === 'chat-interface-screen') window.updateListenTogetherIconProxy(state.activeChatId);
                     if (screenId === 'font-settings-screen') {
                         document.getElementById('font-url-input').value = state.globalSettings.fontUrl || '';
