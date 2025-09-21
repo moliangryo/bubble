@@ -26411,35 +26411,143 @@ document.getElementById('character-phone-container').addEventListener('click', (
         // ▼▼▼ 【请用这整块代码】替换旧的 fetch-models-btn 事件监听器 ▼▼▼
         
         // 封装一个可复用的模型拉取函数
-        async function fetchModels(urlInputId, keyInputId, selectId) {
-            const url = document.getElementById(urlInputId).value.trim();
-            const key = document.getElementById(keyInputId).value.trim();
-            if (!url || !key) return alert('请先填写对应的反代地址和密钥');
-            
-            try {
-                let isGemini = url === GEMINI_API_URL;
-                const response = await fetch(isGemini ? `${GEMINI_API_URL}?key=${getRandomValue(key)}` : `${url}/v1/models`, isGemini ? undefined : { headers: { 'Authorization': `Bearer ${key}` } });
-                if (!response.ok) throw new Error('无法获取模型列表');
-                const data = await response.json();
-                let models = isGemini ? data.models.map(model => ({ id: model.name.split('/')[1] || model.name })) : data.data;
-                
-                const modelSelect = document.getElementById(selectId);
-                modelSelect.innerHTML = '';
-                // 【核心】根据是主/副模型，读取正确的已保存模型
-                const savedModel = selectId === 'model-select' ? state.apiConfig.model : state.apiConfig.secondaryModel;
+       async function fetchModels(urlInputId, keyInputId, selectId) {
+    const url = document.getElementById(urlInputId).value.trim();
+    const key = document.getElementById(keyInputId).value.trim();
+    if (!url || !key) return alert('请先填写对应的反代地址和密钥');
+    
+    try {
+        // ▼▼▼ 核心修复1：使用更灵活的 .includes() 来判断API类型 ▼▼▼
+        let isGemini = url.includes('generativelanguage');
         
-                models.forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model.id;
-                    option.textContent = model.id;
-                    if (model.id === savedModel) option.selected = true;
-                    modelSelect.appendChild(option);
-                });
-                alert('模型列表已更新');
-            } catch (error) {
-                alert(`拉取模型失败: ${error.message}`);
-            }
-        }
+        // ▼▼▼ 核心修复2：在 fetch 请求中，使用用户输入的 url 变量，而不是写死的常量 ▼▼▼
+        const response = await fetch(isGemini ? `${url}?key=${getRandomValue(key)}` : `${url}/v1/models`, isGemini ? undefined : { headers: { 'Authorization': `Bearer ${key}` } });
+        
+        if (!response.ok) throw new Error('无法获取模型列表，请检查地址、密钥或网络连接');
+        
+        const data = await response.json();
+        // ▲▲▲ 修复结束 ▲▲▲
+        
+        let models = isGemini ? data.models.map(model => ({ id: model.name.split('/')[1] || model.name })) : data.data;
+        
+        const modelSelect = document.getElementById(selectId);
+        modelSelect.innerHTML = '';
+        const savedModel = selectId === 'model-select' ? state.apiConfig.model : state.apiConfig.secondaryModel;
+
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.id;
+            option.textContent = model.id;
+            if (model.id === savedModel) option.selected = true;
+            modelSelect.appendChild(option);
+        });
+        alert('模型列表已更新');
+    } catch (error) {
+        alert(`拉取模型失败: ${error.message}`);
+    }
+}async function fetchModels(urlInputId, keyInputId, selectId) {
+    const url = document.getElementById(urlInputId).value.trim();
+    const key = document.getElementById(keyInputId).value.trim();
+    if (!url || !key) return alert('请先填写对应的反代地址和密钥');
+    
+    try {
+        // ▼▼▼ 核心修复1：使用更灵活的 .includes() 来判断API类型 ▼▼▼
+        let isGemini = url.includes('generativelanguage');
+        
+        // ▼▼▼ 核心修复2：在 fetch 请求中，使用用户输入的 url 变量，而不是写死的常量 ▼▼▼
+        const response = await fetch(isGemini ? `${url}?key=${getRandomValue(key)}` : `${url}/v1/models`, isGemini ? undefined : { headers: { 'Authorization': `Bearer ${key}` } });
+        
+        if (!response.ok) throw new Error('无法获取模型列表，请检查地址、密钥或网络连接');
+        
+        const data = await response.json();
+        // ▲▲▲ 修复结束 ▲▲▲
+        
+        let models = isGemini ? data.models.map(model => ({ id: model.name.split('/')[1] || model.name })) : data.data;
+        
+        const modelSelect = document.getElementById(selectId);
+        modelSelect.innerHTML = '';
+        const savedModel = selectId === 'model-select' ? state.apiConfig.model : state.apiConfig.secondaryModel;
+
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.id;
+            option.textContent = model.id;
+            if (model.id === savedModel) option.selected = true;
+            modelSelect.appendChild(option);
+        });
+        alert('模型列表已更新');
+    } catch (error) {
+        alert(`拉取模型失败: ${error.message}`);
+    }
+}async function fetchModels(urlInputId, keyInputId, selectId) {
+    const url = document.getElementById(urlInputId).value.trim();
+    const key = document.getElementById(keyInputId).value.trim();
+    if (!url || !key) return alert('请先填写对应的反代地址和密钥');
+    
+    try {
+        // ▼▼▼ 核心修复1：使用更灵活的 .includes() 来判断API类型 ▼▼▼
+        let isGemini = url.includes('generativelanguage');
+        
+        // ▼▼▼ 核心修复2：在 fetch 请求中，使用用户输入的 url 变量，而不是写死的常量 ▼▼▼
+        const response = await fetch(isGemini ? `${url}?key=${getRandomValue(key)}` : `${url}/v1/models`, isGemini ? undefined : { headers: { 'Authorization': `Bearer ${key}` } });
+        
+        if (!response.ok) throw new Error('无法获取模型列表，请检查地址、密钥或网络连接');
+        
+        const data = await response.json();
+        // ▲▲▲ 修复结束 ▲▲▲
+        
+        let models = isGemini ? data.models.map(model => ({ id: model.name.split('/')[1] || model.name })) : data.data;
+        
+        const modelSelect = document.getElementById(selectId);
+        modelSelect.innerHTML = '';
+        const savedModel = selectId === 'model-select' ? state.apiConfig.model : state.apiConfig.secondaryModel;
+
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.id;
+            option.textContent = model.id;
+            if (model.id === savedModel) option.selected = true;
+            modelSelect.appendChild(option);
+        });
+        alert('模型列表已更新');
+    } catch (error) {
+        alert(`拉取模型失败: ${error.message}`);
+    }
+}async function fetchModels(urlInputId, keyInputId, selectId) {
+    const url = document.getElementById(urlInputId).value.trim();
+    const key = document.getElementById(keyInputId).value.trim();
+    if (!url || !key) return alert('请先填写对应的反代地址和密钥');
+    
+    try {
+        // ▼▼▼ 核心修复1：使用更灵活的 .includes() 来判断API类型 ▼▼▼
+        let isGemini = url.includes('generativelanguage');
+        
+        // ▼▼▼ 核心修复2：在 fetch 请求中，使用用户输入的 url 变量，而不是写死的常量 ▼▼▼
+        const response = await fetch(isGemini ? `${url}?key=${getRandomValue(key)}` : `${url}/v1/models`, isGemini ? undefined : { headers: { 'Authorization': `Bearer ${key}` } });
+        
+        if (!response.ok) throw new Error('无法获取模型列表，请检查地址、密钥或网络连接');
+        
+        const data = await response.json();
+        // ▲▲▲ 修复结束 ▲▲▲
+        
+        let models = isGemini ? data.models.map(model => ({ id: model.name.split('/')[1] || model.name })) : data.data;
+        
+        const modelSelect = document.getElementById(selectId);
+        modelSelect.innerHTML = '';
+        const savedModel = selectId === 'model-select' ? state.apiConfig.model : state.apiConfig.secondaryModel;
+
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.id;
+            option.textContent = model.id;
+            if (model.id === savedModel) option.selected = true;
+            modelSelect.appendChild(option);
+        });
+        alert('模型列表已更新');
+    } catch (error) {
+        alert(`拉取模型失败: ${error.message}`);
+    }
+}
         
         // 绑定主模型拉取按钮
         document.getElementById('fetch-models-btn').addEventListener('click', () => {
