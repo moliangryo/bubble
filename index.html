@@ -15097,7 +15097,10 @@ if (!state.globalSettings.widgetData) {
                         contentHtml = `<img src="${processedByRule}" alt="${msg.meaning || 'Sticker'}" class="sticker-image">`;
                     } else {
                         let plainText = processMentions(processedByRule, chat);
-                        contentHtml = parseMarkdown(plainText).replace(/\n/g, '<br>');
+                        contentHtml = \<div class="text-wrapper">${parseMarkdown(plainText).replace(/\n/g, '
+
+
+                     ')}</div>`;`
                     }
                 }
             }
