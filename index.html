@@ -12021,7 +12021,7 @@ commentActions.forEach(action => {
                 // 3. 所有功能函数定义
                 // ===================================================================
         
-                function showScreen(screenId) {
+                window.showScreen = function(screenId) {
                     if (screenId === 'chat-list-screen') {
                         window.renderChatListProxy(); 
                         switchToChatListView('messages-view');
@@ -17556,7 +17556,7 @@ if (!isMember) {
         
                 function addLongPressListener(element, callback) { let pressTimer; const startPress = (e) => { if(isSelectionMode) return; e.preventDefault(); pressTimer = window.setTimeout(() => callback(e), 500); }; const cancelPress = () => clearTimeout(pressTimer); element.addEventListener('mousedown', startPress); element.addEventListener('mouseup', cancelPress); element.addEventListener('mouseleave', cancelPress); element.addEventListener('touchstart', startPress, { passive: true }); element.addEventListener('touchend', cancelPress); element.addEventListener('touchmove', cancelPress); }
         
-                async function handleListenTogetherClick() { const targetChatId = state.activeChatId; if (!targetChatId) return; if (!musicState.isActive) { startListenTogetherSession(targetChatId); return; } if (musicState.activeChatId === targetChatId) { document.getElementById('music-player-overlay').classList.add('visible'); } else { const oldChatName = state.chats[musicState.activeChatId]?.name || '未知'; const newChatName = state.chats[targetChatId]?.name || '当前'; const confirmed = await showCustomConfirm('切换听歌对象', `您正和「${oldChatName}」听歌。要结束并开始和「${newChatName}」的新会话吗？`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { await endListenTogetherSession(true); await new Promise(resolve => setTimeout(resolve, 50)); startListenTogetherSession(targetChatId); } } }
+                window.handleListenTogetherClick = async function() { const targetChatId = state.activeChatId; if (!targetChatId) return; if (!musicState.isActive) { startListenTogetherSession(targetChatId); return; } if (musicState.activeChatId === targetChatId) { document.getElementById('music-player-overlay').classList.add('visible'); } else { const oldChatName = state.chats[musicState.activeChatId]?.name || '未知'; const newChatName = state.chats[targetChatId]?.name || '当前'; const confirmed = await showCustomConfirm('切换听歌对象', `您正和「${oldChatName}」听歌。要结束并开始和「${newChatName}」的新会话吗？`, { confirmButtonClass: 'btn-danger' }); if (confirmed) { await endListenTogetherSession(true); await new Promise(resolve => setTimeout(resolve, 50)); startListenTogetherSession(targetChatId); } } }
 
 async function startListenTogetherSession(chatId) { const chat = state.chats[chatId]; if (!chat) return; musicState.totalElapsedTime = chat.musicData.totalTime || 0; musicState.isActive = true; musicState.activeChatId = chatId; if (musicState.playlist.length > 0) { musicState.currentIndex = 0; } else { musicState.currentIndex = -1; } if(musicState.timerId) clearInterval(musicState.timerId); musicState.timerId = setInterval(() => { if (musicState.isPlaying) { musicState.totalElapsedTime++; updateElapsedTimeDisplay(); } }, 1000); updatePlayerUI(); updatePlaylistUI(); document.getElementById('music-player-overlay').classList.add('visible'); }
 
@@ -26196,7 +26196,7 @@ ${boardString}
         /**
          * 【总入口】打开渲染规则管理屏幕
          */
-        async function openRenderingRulesScreen() {
+        window.openRenderingRulesScreen = async function() {
             await renderRulesList();
             showScreen('rendering-rules-screen');
         }
@@ -28140,7 +28140,7 @@ async function importSingleChat(file) {
 /**
  * 【总入口】打开角色选择界面
  */
-function openCharacterSelector() {
+window.openCharacterSelector = function() {
     renderCharacterSelector();
     showScreen('character-selection-screen');
 }
@@ -28198,7 +28198,7 @@ async function switchToCharacterPhone(characterId) {
 /**
  * 返回到用户自己的手机主屏幕
  */
-function switchToMyPhone() {
+window.switchToMyPhone = function() {
     activeCharacterId = null;
     console.log("已返回我的手机");
     showScreen('home-screen');
@@ -28233,7 +28233,7 @@ window.switchToCharScreen = switchToCharScreen;
          * 【总分发 | V3.0 | 最终修复版 | 已添加音乐App】打开角色手机内的App
          * @param {string} appName - App的简称 (qq, album, amap...)
          */
-        async function openCharApp(appName) {
+        window.openCharApp = async function(appName) {
             if (!activeCharacterId) return;
             const char = state.chats[activeCharacterId];
             
@@ -28399,7 +28399,7 @@ function renderCharBrowserHistory() {
 /**
  * 切换回角色手机的主屏幕
  */
-function switchToCharHomeScreen() {
+window.switchToCharHomeScreen = function() {
     switchToCharScreen('char-home-screen');
 }
 
@@ -30460,20 +30460,7 @@ setupCharPlayerControls();
             applyScopedCss('', '#chat-messages', 'custom-bubble-style'); // 清除真实聊天界面的自定义样式
             applyScopedCss('', '#settings-preview-area', 'preview-bubble-style'); // 清除预览区的自定义样式
             // ▲▲▲ 修改结束 ▲▲▲
-                  /* --- 【V28: 修复所有按钮点击失效问题】 --- */
-/* --- 这是最终的、干净的代码版本，请用它替换掉您上面粘贴的所有代码 --- */
-
-window.renderChatListProxy = renderChatList;
-window.renderApiSettingsProxy = renderApiSettings;
-window.renderWallpaperScreenProxy = renderWallpaperScreen;
-window.renderWorldBookScreenProxy = renderWorldBookScreen;
-window.showScreen = showScreen;
-window.openRenderingRulesScreen = openRenderingRulesScreen;
-window.handleListenTogetherClick = handleListenTogetherClick;
-window.openCharacterSelector = openCharacterSelector;
-window.openCharApp = openCharApp;
-window.switchToMyPhone = switchToMyPhone;
-window.switchToCharHomeScreen = switchToCharHomeScreen;
+                  
         
                     await loadAllDataFromDB();
                     applyStatusBarVisibility(); // <-- 新增这一行
