@@ -30460,20 +30460,20 @@ setupCharPlayerControls();
             applyScopedCss('', '#chat-messages', 'custom-bubble-style'); // 清除真实聊天界面的自定义样式
             applyScopedCss('', '#settings-preview-area', 'preview-bubble-style'); // 清除预览区的自定义样式
             // ▲▲▲ 修改结束 ▲▲▲
-                   window.openRenderingRulesScreen = openRenderingRulesScreen;
-                    window.showScreen = showScreen;
-                    window.renderChatListProxy = renderChatList;
-                    window.renderApiSettingsProxy = renderApiSettings;
-                    window.renderWallpaperScreenProxy = renderWallpaperScreen;
-                    window.renderWorldBookScreenProxy = renderWorldBookScreen;
-// ▼▼▼ 【核心修复】将内部函数暴露到全局，以便HTML中的 onclick 可以调用它们 ▼▼▼
+                  /* --- 【V28: 修复所有按钮点击失效问题】 --- */
+/* --- 这是最终的、干净的代码版本，请用它替换掉您上面粘贴的所有代码 --- */
+
+window.renderChatListProxy = renderChatList;
+window.renderApiSettingsProxy = renderApiSettings;
+window.renderWallpaperScreenProxy = renderWallpaperScreen;
+window.renderWorldBookScreenProxy = renderWorldBookScreen;
+window.showScreen = showScreen;
+window.openRenderingRulesScreen = openRenderingRulesScreen;
+window.handleListenTogetherClick = handleListenTogetherClick;
 window.openCharacterSelector = openCharacterSelector;
 window.openCharApp = openCharApp;
 window.switchToMyPhone = switchToMyPhone;
 window.switchToCharHomeScreen = switchToCharHomeScreen;
-window.handleListenTogetherClick = handleListenTogetherClick; // <-- 只需要新增这一行
-
-// ▲▲▲ 修复结束 ▲▲▲
         
                     await loadAllDataFromDB();
                     applyStatusBarVisibility(); // <-- 新增这一行
