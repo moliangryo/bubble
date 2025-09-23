@@ -15096,11 +15096,10 @@ if (!state.globalSettings.widgetData) {
                         bubble.classList.add('is-sticker', 'is-card-like');
                         contentHtml = `<img src="${processedByRule}" alt="${msg.meaning || 'Sticker'}" class="sticker-image">`;
                     } else {
-                        let plainText = processMentions(processedByRule, chat);
-                        contentHtml = \<div class="text-wrapper">${parseMarkdown(plainText).replace(/\n/g, '
-
-
-                     ')}</div>`;`
+                        // ▼▼▼ 核心修改就在这里 ▼▼▼
+            let plainText = processMentions(processedByRule, chat);
+            contentHtml = `<div class="text-wrapper">${parseMarkdown(plainText).replace(/\n/g, '<br>')}</div>`;
+            // ▲▲▲ 核心修改结束 ▲▲▲
                     }
                 }
             }
