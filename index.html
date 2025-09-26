@@ -14876,6 +14876,29 @@ if (!state.globalSettings.widgetData) {
                 });
                 return wrapper;
             }
+       // ▼▼▼ 在这里粘贴下面的新代码块 ▼▼▼
+            else if (msg.type === 'call_record') {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'message-wrapper system-pat'; 
+                wrapper.dataset.timestamp = msg.timestamp;
+
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble system-bubble call-record-bubble'; // 添加一个新class用于识别
+                bubble.style.cursor = 'pointer'; // 让鼠标悬停时显示为手型
+                bubble.dataset.recordId = msg.recordId; // 将记录ID绑定到元素上
+                bubble.textContent = msg.content;
+                
+                wrapper.appendChild(bubble);
+                
+                // 添加标准的长按和选择事件
+                addLongPressListener(wrapper, () => showMessageActions(msg.timestamp));
+                wrapper.addEventListener('click', () => { 
+                    if (isSelectionMode) toggleMessageSelection(msg.timestamp); 
+                });
+                
+                return wrapper;
+            }
+            // ▲▲▲ 新代码粘贴结束 ▲▲▲
             else if (msg.type === 'post_deleted_notice') {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'message-wrapper system-pat';
@@ -20452,10 +20475,9 @@ async function saveEditedPost(postId, newRawContent) {
         
             triggerAiInCallAction();
         }
-        
-/**
- * 【核心 | V3.0 终极总结修复版】结束视频通话
- */
+   /**
+    * 【核心 | V3.0 终极总结修复版】结束视频通话
+    */
 async function endVideoCall() {
     if (!videoCallState.isActive) return;
 
@@ -20465,8 +20487,6 @@ async function endVideoCall() {
 
     const chat = state.chats[videoCallState.activeChatId];
     if (chat) {
-        // 1. 立即保存完整的通话记录到数据库。
-        // 这是确保“手动总结”按钮能正常显示的关键步骤。
         const participantsData = [];
         if (videoCallState.isGroupCall) {
             videoCallState.participants.forEach(p => participantsData.push({ name: p.originalName, avatar: p.avatar }));
@@ -20483,41 +20503,42 @@ async function endVideoCall() {
             timestamp: Date.now(),
             duration: duration,
             participants: participantsData,
-            transcript: [...videoCallState.callHistory] // 保存通话中的完整对话
+            transcript: [...videoCallState.callHistory]
         };
-        await db.callRecords.add(callRecord);
-        console.log("通话记录已保存:", callRecord);
         
-        // 2. 在聊天记录里添加对用户可见的“通话结束”消息。
+        // ▼▼▼ 核心修改 1：捕获新记录的ID ▼▼▼
+        const recordId = await db.callRecords.add(callRecord);
+        console.log("通话记录已保存, ID:", recordId);
+        
+        // ▼▼▼ 核心修改 2：创建一条可识别的、特殊类型的消息 ▼▼▼
         let summaryMessage = {
             role: videoCallState.initiator === 'user' ? 'user' : 'assistant',
             content: endCallText,
             timestamp: Date.now(),
+            type: 'call_record',    // 添加类型标记
+            recordId: recordId      // 附加记录ID
         };
+        // ▲▲▲ 修改结束 ▲▲▲
+        
         if (chat.isGroup && summaryMessage.role === 'assistant') {
             summaryMessage.senderName = videoCallState.callRequester || chat.members[0]?.originalName || chat.name;
         }
         chat.history.push(summaryMessage);
 
-        // 3. ★★★ 核心修复：等待自动总结完成，并处理其成功或失败的结果 ★★★
         const callTranscriptForAI = videoCallState.callHistory.map(h => {
             const sender = h.role === 'user' ? (chat.settings.myNickname || '我') : h.senderName;
             return `${sender}: ${h.content}`;
         }).join('\n');
         
-        // 只有当通话记录不为空时，才尝试总结
         if (callTranscriptForAI.trim()) {
             console.log("正在尝试自动总结通话内容...");
-            // 使用 await 等待总结函数返回结果
             const summaryResult = await summarizeCallTranscript(chat.id, callTranscriptForAI);
 
             if (summaryResult.success) {
                 console.log("通话内容自动总结成功，已存入长期记忆。");
-                // 重新从数据库加载chat对象，确保获取到包含新记忆的最新版本
                 state.chats[chat.id] = await db.chats.get(chat.id);
             } else {
                 console.error("通话内容自动总结失败:", summaryResult.error);
-                // 如果总结失败，向用户显示提示，引导他们手动总结（与教程截图一致）
                 const failureMessage = {
                     role: 'system',
                     type: 'pat_message', 
@@ -20530,26 +20551,22 @@ async function endVideoCall() {
             console.log("通话记录为空，跳过自动总结。");
         }
         
-        // 4. 创建一条对用户隐藏的指令，让AI对通话结束这件事本身做出反应。
         const hiddenReactionInstruction = {
             role: 'system',
             content: `[系统指令：视频通话刚刚结束。请你以角色的口吻，向用户主动发送一两条消息，来自然地总结这次通话的要点、确认达成的约定，或者表达你的感受。]`,
-            timestamp: Date.now() + 2, // 递增时间戳以保证顺序
-            isHidden: true 
+            timestamp: Date.now() + 2,
+            isHidden: true
         };
         chat.history.push(hiddenReactionInstruction);
 
-        // 5. 将所有历史记录的更改一次性保存到数据库。
         await db.chats.put(chat);
     }
     
-    // 6. 清理并重置通话状态。
     clearInterval(callTimerInterval);
     callTimerInterval = null;
     const oldChatId = videoCallState.activeChatId;
     videoCallState = { isActive: false, isAwaitingResponse: false, isGroupCall: false, activeChatId: null, initiator: null, startTime: null, participants: [], isUserParticipating: true, callHistory: [], preCallContext: "" };
     
-    // 7. 返回聊天界面，并触发AI对通话结束的后续反应。
     if (chat) {
         openChat(oldChatId);
         triggerAiResponse();
@@ -31063,6 +31080,16 @@ function updateChatListItem(chatId) {
         });
         // ▲▲▲ 替换结束 ▲▲▲
         // ▼▼▼ 【最终修复版】请用这整块代码，完整替换旧的 chat-messages 事件监听器 ▼▼▼
+        // ▼▼▼ 在这里粘贴下面的新代码块 ▼▼▼
+    // 检查是否点击了通话记录气泡
+    const callRecordBubble = e.target.closest('.call-record-bubble');
+    if (callRecordBubble) {
+        const recordId = parseInt(callRecordBubble.dataset.recordId);
+        if (!isNaN(recordId)) {
+            showCallTranscript(recordId); // 调用函数，打开通话详情弹窗
+            return; // 处理完毕，退出函数
+        }
+    }
         document.getElementById('chat-messages').addEventListener('click', async (e) => {
             // 检查是否点击了 "查看详情" 按钮
             const detailsBtn = e.target.closest('.waimai-details-btn');
